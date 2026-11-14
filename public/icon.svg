@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0C97E0" stop-opacity="0.35"/>
+      <stop offset="70%" stop-color="#6C1EB2" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#020307" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cyanBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#0C97E0"/>
+      <stop offset="100%" stop-color="#6C1EB2"/>
+    </linearGradient>
+    <linearGradient id="neonGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#d946ef"/>
+    </linearGradient>
+    <linearGradient id="silverWhite" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#b0c4de"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background base -->
+  <rect width="512" height="512" rx="128" fill="#040814"/>
+  <circle cx="256" cy="256" r="230" fill="url(#bgGlow)"/>
+
+  <!-- Speedometer dial ring -->
+  <circle cx="340" cy="230" r="110" stroke="#1A2C53" stroke-width="12" fill="none" opacity="0.8"/>
+  <path d="M 262 308 A 110 110 0 1 1 440 280" stroke="url(#cyanBlue)" stroke-width="14" stroke-linecap="round" fill="none"/>
+  
+  <!-- Ticks -->
+  <line x1="340" y1="135" x2="340" y2="148" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+  <line x1="415" y1="165" x2="405" y2="173" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+  <line x1="435" y1="230" x2="422" y2="230" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+  <line x1="265" y1="230" x2="278" y2="230" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+  <line x1="285" y1="165" x2="295" y2="173" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Speed needle -->
+  <circle cx="340" cy="230" r="12" fill="#ffffff" filter="drop-shadow(0 0 8px #38bdf8)"/>
+  <line x1="340" y1="230" x2="405" y2="175" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- Motion Speed Streaks behind T -->
+  <line x1="70" y1="190" x2="180" y2="190" stroke="#0C97E0" stroke-width="10" stroke-linecap="round" opacity="0.8"/>
+  <line x1="50" y1="220" x2="200" y2="220" stroke="#38bdf8" stroke-width="12" stroke-linecap="round"/>
+  <line x1="75" y1="250" x2="190" y2="250" stroke="#00f0ff" stroke-width="10" stroke-linecap="round" opacity="0.9"/>
+  <line x1="95" y1="280" x2="170" y2="280" stroke="#6C1EB2" stroke-width="8" stroke-linecap="round" opacity="0.75"/>
+  <circle cx="60" cy="190" r="5" fill="#38bdf8"/>
+  <circle cx="65" cy="280" r="4" fill="#00f0ff"/>
+
+  <!-- Futuristic italic T -->
+  <g transform="skewX(-14) translate(60, 0)">
+    <!-- T top bar -->
+    <path d="M 170 150 L 310 150 L 300 195 L 180 195 Z" fill="url(#silverWhite)" filter="drop-shadow(0 4px 12px rgba(12, 151, 224, 0.5))"/>
+    <!-- T stem -->
+    <path d="M 220 195 L 265 195 L 235 340 L 190 340 Z" fill="url(#silverWhite)" filter="drop-shadow(0 6px 14px rgba(108, 30, 178, 0.4))"/>
+  </g>
+
+  <!-- ASDF Keycaps -->
+  <g transform="translate(248, 305)">
+    <!-- Key A -->
+    <rect x="0" y="0" width="34" height="34" rx="8" fill="#081026" stroke="#375CA0" stroke-width="2"/>
+    <text x="17" y="23" font-family="'Plus Jakarta Sans', monospace, sans-serif" font-weight="700" font-size="16" fill="#38bdf8" text-anchor="middle">A</text>
+    
+    <!-- Key S -->
+    <rect x="40" y="0" width="34" height="34" rx="8" fill="#081026" stroke="#375CA0" stroke-width="2"/>
+    <text x="57" y="23" font-family="'Plus Jakarta Sans', monospace, sans-serif" font-weight="700" font-size="16" fill="#38bdf8" text-anchor="middle">S</text>
+    
+    <!-- Key D -->
+    <rect x="80" y="0" width="34" height="34" rx="8" fill="#081026" stroke="#375CA0" stroke-width="2"/>
+    <text x="97" y="23" font-family="'Plus Jakarta Sans', monospace, sans-serif" font-weight="700" font-size="16" fill="#38bdf8" text-anchor="middle">D</text>
+    
+    <!-- Key F -->
+    <rect x="120" y="0" width="34" height="34" rx="8" fill="#081026" stroke="#375CA0" stroke-width="2"/>
+    <text x="137" y="23" font-family="'Plus Jakarta Sans', monospace, sans-serif" font-weight="700" font-size="16" fill="#38bdf8" text-anchor="middle">F</text>
+  </g>
+
+  <!-- TYPE SPRINT banner text -->
+  <text x="256" y="415" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="900" font-size="42" letter-spacing="3" fill="#ffffff" text-anchor="middle" font-style="italic">
+    TYPE <tspan fill="url(#neonGlow)">SPRINT</tspan>
+  </text>
+  <text x="256" y="445" font-family="'JetBrains Mono', monospace" font-weight="600" font-size="13" letter-spacing="6" fill="#38bdf8" text-anchor="middle">
+    TYPING SPEED TEST
+  </text>
+</svg>

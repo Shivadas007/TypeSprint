@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>Type Sprint — AI-Powered Typing Speed Test &amp; Mastery</title>
+    <meta name="description" content="Improve your typing speed, accuracy and consistency with Type Sprint, an AI-powered typing practice and mastery platform." />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0C97E0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Type Sprint" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Type Sprint — AI-Powered Typing Speed Test & Mastery" />
+    <meta property="og:description" content="Improve your typing speed, accuracy and consistency with Type Sprint, an AI-powered typing practice and mastery platform." />
+    <meta property="og:site_name" content="Type Sprint" />
+    <meta property="og:image" content="/assets/aistudio/logo_original.png" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Type Sprint — AI-Powered Typing Speed Test & Mastery" />
+    <meta name="twitter:description" content="Improve your typing speed, accuracy and consistency with Type Sprint, an AI-powered typing practice and mastery platform." />
+    <meta name="twitter:image" content="/assets/aistudio/logo_original.png" />
+
+    <!-- Favicon & PWA -->
+    <link rel="icon" type="image/png" href="/assets/aistudio/logo_original.png" />
+    <link rel="apple-touch-icon" href="/assets/aistudio/logo_original.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Type Sprint",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All",
+      "description": "Improve your typing speed, accuracy and consistency with Type Sprint, an AI-powered typing practice and mastery platform.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+  </head>
+  <body class="bg-[#020307] text-slate-100 min-h-screen selection:bg-[#0C97E0]/30 selection:text-[#38bdf8] font-sans antialiased overflow-x-hidden">
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: sans-serif; color: #f8fafc; background: #020307;">
+        <h1>Type Sprint — AI-Powered Typing Speed Test &amp; Mastery</h1>
+        <p>Please enable JavaScript in your browser to run real-time typing speed tests and AI diagnostics.</p>
+      </div>
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,225 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email == 'shivadas.sw@gmail.com' &&
+        request.auth.token.email_verified == true;
+    }
+
+    function isValidTheme(theme) {
+      return theme is string && theme.size() <= 20 &&
+        theme in ['cosmic', 'midnight', 'cyber', 'aurora', 'light'];
+    }
+
+    function isValidMode(mode) {
+      return mode is string && mode.size() <= 30 &&
+        mode in ['classic', 'time-attack', 'precision', 'zen', 'code', 'word-sprint', 'quote', 'ai-challenge', 'endless'];
+    }
+
+    function isValidDifficulty(level) {
+      return level is string && level.size() <= 20 &&
+        level in ['easy', 'moderate', 'expert'];
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll([
+          'uid', 'name', 'username', 'email', 'plan', 'subscriptionStatus',
+          'avatarUrl', 'streak', 'longestStreak', 'xp', 'level', 'bestWpm',
+          'avgWpm', 'testsCompleted', 'themePreference', 'soundEnabled',
+          'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'uid', 'name', 'username', 'email', 'plan', 'subscriptionStatus',
+          'avatarUrl', 'streak', 'longestStreak', 'xp', 'level', 'bestWpm',
+          'avgWpm', 'testsCompleted', 'themePreference', 'soundEnabled',
+          'createdAt', 'updatedAt'
+        ]) &&
+        data.uid is string && isValidId(data.uid) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 80 &&
+        data.username is string && data.username.size() >= 3 && data.username.size() <= 32 &&
+        data.username.matches('^[a-z0-9_.-]{3,32}$') &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 160 &&
+        data.plan == 'free' &&
+        data.subscriptionStatus == 'none' &&
+        data.avatarUrl is string && data.avatarUrl.size() >= 1 && data.avatarUrl.size() <= 400 &&
+        data.streak is int && data.streak >= 0 && data.streak <= 10000 &&
+        data.longestStreak is int && data.longestStreak >= 0 && data.longestStreak <= 10000 &&
+        data.xp is int && data.xp >= 0 && data.xp <= 100000000 &&
+        data.level is int && data.level >= 1 && data.level <= 10000 &&
+        data.bestWpm is int && data.bestWpm >= 0 && data.bestWpm <= 350 &&
+        data.avgWpm is int && data.avgWpm >= 0 && data.avgWpm <= 350 &&
+        data.testsCompleted is int && data.testsCompleted >= 0 && data.testsCompleted <= 1000000 &&
+        isValidTheme(data.themePreference) &&
+        data.soundEnabled is bool &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidTestResult(data, userId, resultId) {
+      return data.keys().hasAll([
+          'id', 'uid', 'wpm', 'rawWpm', 'accuracy', 'consistency',
+          'correctChars', 'incorrectChars', 'errors', 'totalEntries',
+          'wordsCompleted', 'timeTaken', 'targetDuration', 'mode',
+          'level', 'date', 'timestamp', 'wpmPerSecond', 'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id', 'uid', 'wpm', 'rawWpm', 'accuracy', 'consistency',
+          'correctChars', 'incorrectChars', 'errors', 'totalEntries',
+          'wordsCompleted', 'timeTaken', 'targetDuration', 'mode',
+          'level', 'date', 'timestamp', 'wpmPerSecond', 'isPersonalBest', 'createdAt'
+        ]) &&
+        data.id == resultId && isValidId(data.id) &&
+        data.uid == userId && isValidId(data.uid) &&
+        (data.wpm is int || data.wpm is float) && data.wpm >= 0 && data.wpm <= 350 &&
+        (data.rawWpm is int || data.rawWpm is float) && data.rawWpm >= 0 && data.rawWpm <= 450 &&
+        (data.accuracy is int || data.accuracy is float) && data.accuracy >= 0 && data.accuracy <= 100 &&
+        (data.consistency is int || data.consistency is float) && data.consistency >= 0 && data.consistency <= 100 &&
+        data.correctChars is int && data.correctChars >= 0 && data.correctChars <= 100000 &&
+        data.incorrectChars is int && data.incorrectChars >= 0 && data.incorrectChars <= 100000 &&
+        data.errors is int && data.errors >= 0 && data.errors <= 100000 &&
+        data.totalEntries is int && data.totalEntries >= 0 && data.totalEntries <= 200000 &&
+        data.wordsCompleted is int && data.wordsCompleted >= 0 && data.wordsCompleted <= 50000 &&
+        (data.timeTaken is int || data.timeTaken is float) && data.timeTaken >= 0 && data.timeTaken <= 7200 &&
+        (data.targetDuration is int || data.targetDuration is float) && data.targetDuration >= 0 && data.targetDuration <= 7200 &&
+        isValidMode(data.mode) &&
+        isValidDifficulty(data.level) &&
+        data.date is string && data.date.size() >= 1 && data.date.size() <= 64 &&
+        (data.timestamp is int || data.timestamp is float) && data.timestamp > 0 &&
+        data.wpmPerSecond is list && data.wpmPerSecond.size() <= 600 &&
+        (data.wpmPerSecond.size() == 0 || data.wpmPerSecond[0] is int || data.wpmPerSecond[0] is float) &&
+        (!('isPersonalBest' in data) || data.isPersonalBest is bool) &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidLeaderboardEntry(data, userId) {
+      return data.keys().hasAll([
+          'uid', 'username', 'name', 'avatarUrl', 'wpm',
+          'accuracy', 'consistency', 'tests', 'badge', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'uid', 'username', 'name', 'avatarUrl', 'wpm',
+          'accuracy', 'consistency', 'tests', 'badge', 'updatedAt'
+        ]) &&
+        data.uid == userId && isValidId(data.uid) &&
+        data.username is string && data.username.size() >= 3 && data.username.size() <= 32 &&
+        data.username.matches('^[a-z0-9_.-]{3,32}$') &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 80 &&
+        data.avatarUrl is string && data.avatarUrl.size() >= 1 && data.avatarUrl.size() <= 400 &&
+        data.wpm is int && data.wpm >= 0 && data.wpm <= 350 &&
+        (data.accuracy is int || data.accuracy is float) && data.accuracy >= 0 && data.accuracy <= 100 &&
+        (data.consistency is int || data.consistency is float) && data.consistency >= 0 && data.consistency <= 100 &&
+        data.tests is int && data.tests >= 0 && data.tests <= 1000000 &&
+        data.badge is string && data.badge.size() >= 1 && data.badge.size() <= 40 &&
+        data.updatedAt is timestamp;
+    }
+
+    // Boot connectivity verification document (read-only)
+    match /test/connection {
+      allow get: if true;
+      allow list, write: if false;
+    }
+
+    // Private athlete profiles (PII isolated to owner or verified admin)
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+
+      allow create: if isValidId(userId) &&
+        isOwner(userId) &&
+        isValidUserProfile(incoming()) &&
+        incoming().uid == request.auth.uid &&
+        incoming().email == request.auth.token.email &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isValidId(userId) &&
+        isValidUserProfile(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().email == existing().email &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time && (
+          isAdmin() ||
+          (
+            isOwner(userId) &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'name', 'username', 'avatarUrl', 'themePreference', 'soundEnabled',
+              'streak', 'longestStreak', 'xp', 'level', 'bestWpm', 'avgWpm',
+              'testsCompleted', 'updatedAt'
+            ])
+          )
+        );
+
+      allow delete: if isValidId(userId) && isAdmin();
+
+      // Master-gated subcollection for user typing test history
+      match /results/{resultId} {
+        allow get: if isValidId(userId) && isValidId(resultId) && (isOwner(userId) || isAdmin());
+        allow list: if isValidId(userId) && (isOwner(userId) || isAdmin()) && resource.data.uid == userId;
+
+        allow create: if isValidId(userId) && isValidId(resultId) &&
+          isOwner(userId) &&
+          isValidTestResult(incoming(), userId, resultId) &&
+          incoming().createdAt == request.time &&
+          exists(/databases/$(database)/documents/users/$(userId));
+
+        allow update: if false;
+        allow delete: if isValidId(userId) && isValidId(resultId) && (isOwner(userId) || isAdmin());
+      }
+    }
+
+    // Public global leaderboard (non-PII fields only)
+    match /leaderboard/{userId} {
+      allow get: if isValidId(userId);
+      allow list: if true;
+
+      allow create: if isValidId(userId) &&
+        isOwner(userId) &&
+        isValidLeaderboardEntry(incoming(), userId) &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/users/$(userId));
+
+      allow update: if isValidId(userId) &&
+        isValidLeaderboardEntry(incoming(), userId) &&
+        incoming().uid == existing().uid &&
+        incoming().updatedAt == request.time && (
+          isAdmin() ||
+          (
+            isOwner(userId) &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'username', 'name', 'avatarUrl', 'wpm', 'accuracy',
+              'consistency', 'tests', 'badge', 'updatedAt'
+            ])
+          )
+        );
+
+      allow delete: if isValidId(userId) && (isOwner(userId) || isAdmin());
+    }
+  }
+}

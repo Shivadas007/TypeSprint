@@ -1,0 +1,326 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private athlete profile and preferences owned by an authenticated user.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID of the user."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Athlete display name."
+        },
+        "username": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z0-9_.-]{3,32}$",
+          "description": "Public handle for leaderboard display."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 160,
+          "description": "Verified account email address (PII)."
+        },
+        "plan": {
+          "type": "string",
+          "enum": ["free"],
+          "description": "Active subscription tier (Free Forever)."
+        },
+        "subscriptionStatus": {
+          "type": "string",
+          "enum": ["none"],
+          "description": "Subscription lifecycle status."
+        },
+        "avatarUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "description": "Profile avatar HTTPS URL or local asset path."
+        },
+        "streak": {
+          "type": "integer",
+          "description": "Current active daily typing streak."
+        },
+        "longestStreak": {
+          "type": "integer",
+          "description": "All-time longest daily typing streak."
+        },
+        "xp": {
+          "type": "integer",
+          "description": "Accumulated experience points."
+        },
+        "level": {
+          "type": "integer",
+          "description": "Current athlete level."
+        },
+        "bestWpm": {
+          "type": "integer",
+          "description": "Highest verified WPM."
+        },
+        "avgWpm": {
+          "type": "integer",
+          "description": "Average WPM across recorded tests."
+        },
+        "testsCompleted": {
+          "type": "integer",
+          "description": "Total completed typing sprints."
+        },
+        "themePreference": {
+          "type": "string",
+          "enum": ["cosmic", "midnight", "cyber", "aurora", "light"],
+          "description": "Saved visual theme."
+        },
+        "soundEnabled": {
+          "type": "boolean",
+          "description": "Mechanical keystroke audio toggle."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last-modified timestamp."
+        }
+      },
+      "required": [
+        "uid",
+        "name",
+        "username",
+        "email",
+        "plan",
+        "subscriptionStatus",
+        "avatarUrl",
+        "streak",
+        "longestStreak",
+        "xp",
+        "level",
+        "bestWpm",
+        "avgWpm",
+        "testsCompleted",
+        "themePreference",
+        "soundEnabled",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "TestResult": {
+      "title": "TestResult",
+      "description": "Immutable completed typing sprint telemetry record.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique result identifier."
+        },
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Owner Firebase Auth UID."
+        },
+        "wpm": {
+          "type": "number",
+          "description": "Net words per minute."
+        },
+        "rawWpm": {
+          "type": "number",
+          "description": "Gross words per minute."
+        },
+        "accuracy": {
+          "type": "number",
+          "description": "Accuracy percentage (0-100)."
+        },
+        "consistency": {
+          "type": "number",
+          "description": "Cadence consistency percentage (0-100)."
+        },
+        "correctChars": {
+          "type": "integer",
+          "description": "Correctly typed characters."
+        },
+        "incorrectChars": {
+          "type": "integer",
+          "description": "Incorrectly typed characters."
+        },
+        "errors": {
+          "type": "integer",
+          "description": "Total keystroke errors."
+        },
+        "totalEntries": {
+          "type": "integer",
+          "description": "Total keystroke entries."
+        },
+        "wordsCompleted": {
+          "type": "integer",
+          "description": "Completed words count."
+        },
+        "timeTaken": {
+          "type": "number",
+          "description": "Elapsed seconds."
+        },
+        "targetDuration": {
+          "type": "number",
+          "description": "Configured duration or word target."
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["classic", "time-attack", "precision", "zen", "code", "word-sprint", "quote", "ai-challenge", "endless"],
+          "description": "Typing test mode."
+        },
+        "level": {
+          "type": "string",
+          "enum": ["easy", "moderate", "expert"],
+          "description": "Difficulty preset."
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "ISO timestamp string of test completion."
+        },
+        "timestamp": {
+          "type": "number",
+          "description": "Epoch milliseconds of test completion."
+        },
+        "wpmPerSecond": {
+          "type": "array",
+          "description": "Per-second WPM telemetry series (max 600 points)."
+        },
+        "isPersonalBest": {
+          "type": "boolean",
+          "description": "Whether this run set a personal best."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server write timestamp."
+        }
+      },
+      "required": [
+        "id",
+        "uid",
+        "wpm",
+        "rawWpm",
+        "accuracy",
+        "consistency",
+        "correctChars",
+        "incorrectChars",
+        "errors",
+        "totalEntries",
+        "wordsCompleted",
+        "timeTaken",
+        "targetDuration",
+        "mode",
+        "level",
+        "date",
+        "timestamp",
+        "wpmPerSecond",
+        "createdAt"
+      ]
+    },
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "Public non-PII ranking card displayed on the global leaderboard.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Owner Firebase Auth UID."
+        },
+        "username": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z0-9_.-]{3,32}$",
+          "description": "Public athlete handle."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Public athlete display name."
+        },
+        "avatarUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "description": "Public cartoon avatar URL."
+        },
+        "wpm": {
+          "type": "integer",
+          "description": "Verified peak WPM."
+        },
+        "accuracy": {
+          "type": "number",
+          "description": "Latest or average accuracy percentage."
+        },
+        "consistency": {
+          "type": "number",
+          "description": "Latest or average consistency percentage."
+        },
+        "tests": {
+          "type": "integer",
+          "description": "Total completed sprints."
+        },
+        "badge": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "description": "Earned tier badge title."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of latest ranking update."
+        }
+      },
+      "required": [
+        "uid",
+        "username",
+        "name",
+        "avatarUrl",
+        "wpm",
+        "accuracy",
+        "consistency",
+        "tests",
+        "badge",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private athlete profile documents (strictly owner or admin read/write)."
+    },
+    "/users/{userId}/results/{resultId}": {
+      "schema": { "$ref": "#/entities/TestResult" },
+      "description": "Per-user typing test telemetry history subcollection."
+    },
+    "/leaderboard/{userId}": {
+      "schema": { "$ref": "#/entities/LeaderboardEntry" },
+      "description": "Public global speed ranking entries containing zero PII."
+    }
+  }
+}

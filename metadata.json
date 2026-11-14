@@ -1,0 +1,6 @@
+{
+  "name": "Type Sprint",
+  "description": "Premium AI-powered typing speed test and mastery platform with real-time performance analytics, cosmic aesthetics, and adaptive coaching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
