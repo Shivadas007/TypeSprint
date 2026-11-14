@@ -387,7 +387,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative text-[var(--color-text-main)] selection:bg-cyan-500/30 selection:text-cyan-300">
+    <div className="min-h-dvh overflow-x-clip flex flex-col relative text-[var(--color-text-main)] selection:bg-cyan-500/30 selection:text-cyan-300">
       {/* Dynamic Perspective Cosmic Background */}
       <CosmicBackground theme={theme} typingEnergy={typingEnergy} />
 
@@ -412,10 +412,10 @@ export default function App() {
       />
 
       {/* Main Viewport Content */}
-      <main className="flex-1 w-full max-w-[1880px] mx-auto px-4 sm:px-8 xl:px-12 py-6 flex flex-col justify-start">
+      <main className="flex-1 w-full max-w-[1880px] mx-auto px-3 sm:px-6 lg:px-10 xl:px-12 py-4 sm:py-6 flex flex-col justify-start">
         {/* TAB 1: PRACTICE & SPRINT WORKSPACE */}
         {currentTab === 'practice' && (
-          <div className="flex flex-col gap-8 w-full">
+          <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 w-full min-w-0">
             {/* Show Results HUD when test finished */}
             {currentResult ? (
               <ResultsHUD
@@ -431,23 +431,23 @@ export default function App() {
             ) : (
               <>
                 {/* Hero Headline Section */}
-                <div className="text-center w-full max-w-5xl mx-auto mt-2 space-y-3">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-mono font-semibold bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">
-                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                <div className="text-center w-full max-w-5xl mx-auto mt-0.5 sm:mt-2 space-y-1.5 sm:space-y-3 px-1">
+                  <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 rounded-full text-[11px] sm:text-sm font-mono font-semibold bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">
+                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
                     <span>Neural Typing Acceleration</span>
                   </div>
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-none italic">
+                  <h1 className="text-[26px] sm:text-5xl md:text-6xl xl:text-7xl font-black text-white tracking-tight leading-[1.08] italic text-balance">
                     MASTER THE <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent not-italic font-extrabold">KEYBOARD</span>
                   </h1>
-                  <p className="text-slate-300 text-base sm:text-lg max-w-3xl mx-auto font-normal leading-relaxed">
+                  <p className="text-slate-300 text-xs sm:text-base lg:text-lg max-w-2xl lg:max-w-3xl mx-auto font-normal leading-relaxed">
                     One keystroke at a time. Train your fingers, calibrate your cadence, and enter your flow state.
                   </p>
                 </div>
 
                 {/* Configuration Bar */}
-                <div className="w-full flex flex-wrap items-center justify-between gap-4 p-3.5 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-lg">
+                <div className="w-full min-w-0 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-lg">
                   {/* Mode Selector */}
-                  <div className="flex items-center gap-1.5 overflow-x-auto p-1 max-w-full">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1 sm:gap-1.5 p-0.5 sm:p-1 w-full xl:w-auto">
                     {[
                       { id: 'classic', label: 'Classic' },
                       { id: 'time-attack', label: 'Time Attack' },
@@ -465,7 +465,7 @@ export default function App() {
                           setMode(m.id as TestMode);
                           setCustomText(undefined);
                         }}
-                        className={`px-3.5 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition ${
+                        className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-sm font-bold whitespace-nowrap shrink-0 transition ${
                           mode === m.id
                             ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_14px_rgba(6,182,212,0.45)]'
                             : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
@@ -477,16 +477,16 @@ export default function App() {
                   </div>
 
                   {/* Level & Duration Selectors */}
-                  <div className="flex items-center gap-3 ml-auto">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-between xl:justify-end gap-2 sm:gap-3 w-full xl:w-auto shrink-0">
                     {/* Level */}
                     {mode !== 'code' && mode !== 'quote' && (
-                      <div className="flex items-center gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800 text-sm font-semibold">
+                      <div className="flex items-center gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800 text-[11px] sm:text-sm font-semibold">
                         {(['easy', 'moderate', 'expert'] as const).map((lvl) => (
                           <button
                             key={lvl}
                             type="button"
                             onClick={() => setLevel(lvl)}
-                            className={`px-3 py-1.5 rounded-lg capitalize transition ${
+                            className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg capitalize whitespace-nowrap transition ${
                               level === lvl ? 'bg-sky-500 text-white font-bold' : 'text-slate-400 hover:text-white'
                             }`}
                           >
@@ -498,13 +498,13 @@ export default function App() {
 
                     {/* Duration / Words */}
                     {mode !== 'quote' && mode !== 'endless' && (
-                      <div className="flex items-center gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800 text-sm font-mono font-bold">
+                      <div className="flex items-center gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800 text-[11px] sm:text-sm font-mono font-bold">
                         {(mode === 'word-sprint' ? [25, 50, 100] : [15, 30, 60, 120]).map((num) => (
                           <button
                             key={num}
                             type="button"
                             onClick={() => setDuration(num)}
-                            className={`px-3 py-1.5 rounded-lg transition ${
+                            className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg tabular-nums transition ${
                               duration === num ? 'bg-cyan-500 text-black font-black' : 'text-slate-400 hover:text-white'
                             }`}
                           >
@@ -516,7 +516,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Live Interactive Typing Engine with Increased Box Length & Endless Stream */}
+                {/* Live Interactive Typing Engine */}
                 <TypingEngine
                   key={`${mode}-${level}-${duration}-${customTextTitle || ''}`}
                   mode={mode}
@@ -529,25 +529,25 @@ export default function App() {
                 />
 
                 {/* Real-time Interactive Keyboard Visualizer */}
-                <div className="w-full mt-4">
+                <div className="w-full min-w-0 mt-1 sm:mt-3">
                   <KeyboardVisualizer activeKey={activeKey} />
                 </div>
 
                 {/* Landing Page Supporting Sections */}
-                <section className="w-full mt-16 pt-12 border-t border-sky-500/15 flex flex-col gap-16">
+                <section className="w-full mt-8 sm:mt-12 lg:mt-16 pt-8 sm:pt-12 border-t border-sky-500/15 flex flex-col gap-10 sm:gap-16">
                   {/* How Type Sprint Works */}
                   <div>
-                    <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+                    <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-10 space-y-2">
                       <span className="text-xs uppercase font-mono tracking-widest text-cyan-400">
                         Methodology
                       </span>
-                      <h2 className="text-3xl font-black text-white">How Type Sprint Works</h2>
-                      <p className="text-slate-400 text-sm">
+                      <h2 className="text-2xl sm:text-3xl font-black text-white">How Type Sprint Works</h2>
+                      <p className="text-slate-400 text-xs sm:text-sm">
                         Engineered from the ground up for maximum neuromuscular speed and ergonomic longevity.
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                       {[
                         { step: '01', title: 'Take a Sprint', desc: 'Engage with endless continuous word streams or real code syntax.' },
                         { step: '02', title: 'Telemetry Audit', desc: 'Algorithms track millisecond latency across every finger zone.' },
@@ -557,7 +557,9 @@ export default function App() {
                       ].map((item, idx) => (
                         <div
                           key={idx}
-                          className="p-5 rounded-2xl bg-[#060c1d]/75 border border-sky-500/15 backdrop-blur-md flex flex-col justify-between"
+                          className={`p-5 rounded-2xl bg-[#060c1d]/75 border border-sky-500/15 backdrop-blur-md flex flex-col justify-between ${
+                            idx === 4 ? 'sm:col-span-2 lg:col-span-1' : ''
+                          }`}
                         >
                           <span className="text-xl font-black font-mono text-cyan-400">{item.step}</span>
                           <div className="mt-4">
@@ -571,15 +573,15 @@ export default function App() {
 
                   {/* Feature Highlights Grid */}
                   <div>
-                    <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+                    <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-10 space-y-2">
                       <span className="text-xs uppercase font-mono tracking-widest text-cyan-400">
                         Capabilities
                       </span>
-                      <h2 className="text-3xl font-black text-white">Engineered for Perfection</h2>
+                      <h2 className="text-2xl sm:text-3xl font-black text-white">Engineered for Perfection</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="p-7 rounded-3xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                      <div className="p-6 sm:p-7 rounded-3xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl">
                         <Brain className="w-8 h-8 text-cyan-400 mb-4" />
                         <h3 className="text-lg font-bold text-white mb-2">Neural AI Coach</h3>
                         <p className="text-xs text-slate-400 leading-relaxed">
@@ -587,7 +589,7 @@ export default function App() {
                         </p>
                       </div>
 
-                      <div className="p-7 rounded-3xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl">
+                      <div className="p-6 sm:p-7 rounded-3xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl">
                         <Code className="w-8 h-8 text-emerald-400 mb-4" />
                         <h3 className="text-lg font-bold text-white mb-2">Real Syntax Code Mode</h3>
                         <p className="text-xs text-slate-400 leading-relaxed">
@@ -595,7 +597,7 @@ export default function App() {
                         </p>
                       </div>
 
-                      <div className="p-7 rounded-3xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl">
+                      <div className="p-6 sm:p-7 rounded-3xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl">
                         <Trophy className="w-8 h-8 text-amber-400 mb-4" />
                         <h3 className="text-lg font-bold text-white mb-2">Certified Credentials</h3>
                         <p className="text-xs text-slate-400 leading-relaxed">
@@ -607,12 +609,12 @@ export default function App() {
 
                   {/* Frequently Asked Questions */}
                   <div>
-                    <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
+                    <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8 space-y-2">
                       <span className="text-xs uppercase font-mono tracking-widest text-cyan-400">Inquiries</span>
-                      <h2 className="text-3xl font-black text-white">Frequently Asked Questions</h2>
+                      <h2 className="text-2xl sm:text-3xl font-black text-white">Frequently Asked Questions</h2>
                     </div>
 
-                    <div className="max-w-3xl mx-auto space-y-4">
+                    <div className="max-w-3xl mx-auto space-y-3 sm:space-y-4">
                       {[
                         {
                           q: 'How is Words Per Minute (WPM) calculated?',
@@ -627,7 +629,7 @@ export default function App() {
                           a: 'Yes. Type Sprint is a fully compliant Progressive Web App (PWA) with client-side service worker caching. Timed tests and history operate seamlessly without network connectivity.',
                         },
                       ].map((faq, i) => (
-                        <div key={i} className="p-5 rounded-2xl bg-[#060c1d]/80 border border-sky-500/15">
+                        <div key={i} className="p-4 sm:p-5 rounded-2xl bg-[#060c1d]/80 border border-sky-500/15">
                           <h4 className="font-bold text-white text-sm mb-1.5">{faq.q}</h4>
                           <p className="text-xs text-slate-400 leading-relaxed">{faq.a}</p>
                         </div>
@@ -636,11 +638,11 @@ export default function App() {
                   </div>
 
                   {/* Final Call to Action */}
-                  <div className="p-10 rounded-3xl bg-gradient-to-r from-[#0a173d] via-[#091533] to-[#120f2e] border border-cyan-500/30 text-center space-y-4 shadow-2xl relative overflow-hidden">
-                    <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                  <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-r from-[#0a173d] via-[#091533] to-[#120f2e] border border-cyan-500/30 text-center space-y-4 shadow-2xl relative overflow-hidden">
+                    <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight text-balance">
                       Ready to Enter Your Flow State?
                     </h2>
-                    <p className="text-slate-400 text-sm max-w-md mx-auto">
+                    <p className="text-slate-400 text-xs sm:text-sm max-w-md mx-auto">
                       Join thousands of software engineers, writers, and competitive typists training on Type Sprint today.
                     </p>
                     <button
@@ -649,7 +651,7 @@ export default function App() {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                         handleRetryTest();
                       }}
-                      className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-white font-bold text-sm shadow-[0_0_25px_rgba(12,151,224,0.45)] transition hover:scale-105 active:scale-95 inline-flex items-center gap-2"
+                      className="px-7 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-white font-bold text-sm shadow-[0_0_25px_rgba(12,151,224,0.45)] transition hover:scale-105 active:scale-95 inline-flex items-center gap-2"
                     >
                       <Zap className="w-4 h-4" />
                       <span>Start Typing Now</span>
@@ -670,17 +672,17 @@ export default function App() {
               onStartCustomPractice={handleStartCustomPractice}
             />
           ) : (
-            <div className="w-full max-w-xl mx-auto my-12 p-8 rounded-3xl bg-[#060c1d]/90 border border-sky-500/30 backdrop-blur-xl text-center space-y-5 shadow-2xl">
+            <div className="w-full max-w-xl mx-auto my-6 sm:my-12 p-5 sm:p-8 rounded-3xl bg-[#060c1d]/90 border border-sky-500/30 backdrop-blur-xl text-center space-y-5 shadow-2xl">
               <div className="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
                 <Brain className="w-8 h-8 text-cyan-400" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-black text-white">Biomechanical AI Coach</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <h3 className="text-xl sm:text-2xl font-black text-white">Biomechanical AI Coach</h3>
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                   Sign in or create an account to unlock real-time neural error-correction, finger zone telemetry, and personalized weakness calibration drills.
                 </p>
               </div>
-              <div className="flex items-center justify-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setCurrentTab('login')}
@@ -722,17 +724,17 @@ export default function App() {
               onNavigateToAiCoach={() => setCurrentTab('coach')}
             />
           ) : (
-            <div className="w-full max-w-xl mx-auto my-12 p-8 rounded-3xl bg-[#060c1d]/90 border border-sky-500/30 backdrop-blur-xl text-center space-y-5 shadow-2xl">
+            <div className="w-full max-w-xl mx-auto my-6 sm:my-12 p-5 sm:p-8 rounded-3xl bg-[#060c1d]/90 border border-sky-500/30 backdrop-blur-xl text-center space-y-5 shadow-2xl">
               <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
                 <Trophy className="w-8 h-8 text-amber-400" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-black text-white">Athlete Performance Dashboard</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <h3 className="text-xl sm:text-2xl font-black text-white">Athlete Performance Dashboard</h3>
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                   Sign in to view your complete typing cadence analytics, velocity progressions, and unlocked mastery badges.
                 </p>
               </div>
-              <div className="flex items-center justify-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setCurrentTab('login')}
@@ -769,17 +771,17 @@ export default function App() {
               onUpdateProfile={(updated) => setUser(updated)}
             />
           ) : (
-            <div className="w-full max-w-xl mx-auto my-12 p-8 rounded-3xl bg-[#060c1d]/90 border border-sky-500/30 backdrop-blur-xl text-center space-y-5 shadow-2xl">
+            <div className="w-full max-w-xl mx-auto my-6 sm:my-12 p-5 sm:p-8 rounded-3xl bg-[#060c1d]/90 border border-sky-500/30 backdrop-blur-xl text-center space-y-5 shadow-2xl">
               <div className="w-16 h-16 mx-auto rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center">
                 <Sparkles className="w-8 h-8 text-purple-400" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-black text-white">Speed Athlete Profile</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <h3 className="text-xl sm:text-2xl font-black text-white">Speed Athlete Profile</h3>
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                   Sign in to customize your avatar, select themes, and export high-resolution achievement certificates.
                 </p>
               </div>
-              <div className="flex items-center justify-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setCurrentTab('login')}
@@ -853,9 +855,9 @@ export default function App() {
       </main>
 
       {/* Footer with Direct Navigation Links */}
-      <footer className="w-full border-t border-sky-500/15 py-8 px-6 mt-16 bg-[#020307]/90 backdrop-blur-xl text-xs text-slate-400">
-        <div className="w-full max-w-[1880px] mx-auto px-4 sm:px-8 xl:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col sm:flex-row items-center gap-3">
+      <footer className="w-full border-t border-sky-500/15 py-6 sm:py-8 px-3 sm:px-6 mt-10 sm:mt-16 bg-[#020307]/90 backdrop-blur-xl text-xs text-slate-400">
+        <div className="w-full max-w-[1880px] mx-auto px-2 sm:px-6 lg:px-10 xl:px-12 flex flex-col lg:flex-row items-center justify-between gap-5 text-center lg:text-left">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={() => {
@@ -867,7 +869,7 @@ export default function App() {
               <img
                 src="/assets/aistudio/logo_original.png"
                 alt="Type Sprint Logo"
-                className="h-9 sm:h-11 w-auto object-contain group-hover:scale-105 transition-all duration-200"
+                className="h-9 sm:h-10 w-auto object-contain group-hover:scale-105 transition-all duration-200"
               />
             </button>
             <span className="hidden sm:inline text-slate-600">·</span>
@@ -875,7 +877,7 @@ export default function App() {
           </div>
 
           {/* Quick Page Links */}
-          <div className="flex flex-wrap items-center justify-center gap-5 font-semibold text-slate-400">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2.5 font-semibold text-slate-400">
             <button
               type="button"
               onClick={() => {

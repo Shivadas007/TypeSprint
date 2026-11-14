@@ -80,11 +80,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   ];
 
   return (
-    <div className="w-full flex flex-col gap-8 pb-12 animate-in fade-in duration-300">
+    <div className="w-full flex flex-col gap-6 sm:gap-8 pb-10 sm:pb-12 animate-in fade-in duration-300">
       {/* Profile Header Hero */}
-      <div className="p-8 rounded-3xl bg-gradient-to-r from-[#071330] via-[#091738] to-[#120f2e] border border-sky-500/30 backdrop-blur-xl shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-6">
-          <div className="w-24 h-24 rounded-2xl border-2 border-cyan-400/60 p-1 shadow-[0_0_25px_rgba(12,151,224,0.35)] relative overflow-hidden bg-slate-900 group">
+      <div className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#071330] via-[#091738] to-[#120f2e] border border-sky-500/30 backdrop-blur-xl shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6">
+        <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-4 sm:gap-6 w-full md:w-auto min-w-0">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-cyan-400/60 p-1 shadow-[0_0_25px_rgba(12,151,224,0.35)] relative overflow-hidden bg-slate-900 group shrink-0">
             <img
               src={avatarUrl || DEFAULT_CARTOON_AVATAR_FALLBACK}
               alt={user.name}
@@ -94,22 +94,22 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               className="w-full h-full rounded-xl object-cover"
             />
           </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
               <span className="text-xs uppercase font-mono text-cyan-400 font-bold px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">
                 LEVEL {user.level} · SPEED ATHLETE
               </span>
             </div>
             {/* User Full Name */}
-            <h2 className="text-3xl font-black text-white tracking-tight leading-tight">{user.name}</h2>
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight break-words">{user.name}</h2>
             {/* Username placed clearly below Full Name */}
-            <span className="text-sm font-mono text-cyan-400 font-semibold mt-0.5">@{user.username}</span>
-            <span className="text-xs text-slate-400 font-mono mt-0.5">{user.email}</span>
+            <span className="text-sm font-mono text-cyan-400 font-semibold mt-0.5 truncate">@{user.username}</span>
+            <span className="text-xs text-slate-400 font-mono mt-0.5 break-all">{user.email}</span>
           </div>
         </div>
 
         {/* XP Progress Bar */}
-        <div className="w-full md:w-64 p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+        <div className="w-full md:w-64 p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shrink-0">
           <div className="flex items-center justify-between text-xs font-mono mb-2">
             <span className="text-slate-400">Level {user.level} Mastery</span>
             <span className="text-cyan-400 font-bold">{user.xp % 1000} / 1,000 XP</span>
@@ -124,47 +124,47 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       </div>
 
       {/* Summary KPI Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl">
           <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
             <span>Peak Velocity</span>
             <Trophy className="w-4 h-4 text-amber-400" />
           </div>
           <div className="my-2">
-            <span className="text-3xl font-black font-mono text-amber-400">{bestWpm} WPM</span>
+            <span className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-amber-400">{bestWpm} WPM</span>
           </div>
           <span className="text-[11px] text-slate-500">Verified Best</span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl">
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl">
           <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
             <span>Active Streak</span>
             <Flame className="w-4 h-4 text-orange-400" />
           </div>
           <div className="my-2">
-            <span className="text-3xl font-black font-mono text-orange-400">{user.streak} Days</span>
+            <span className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-orange-400">{user.streak} Days</span>
           </div>
           <span className="text-[11px] text-slate-500">Longest: {user.longestStreak}</span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl">
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl">
           <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
             <span>Total Practice</span>
             <Clock className="w-4 h-4 text-purple-400" />
           </div>
           <div className="my-2">
-            <span className="text-3xl font-black font-mono text-purple-400">{practiceMinutes} Min</span>
+            <span className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-purple-400">{practiceMinutes} Min</span>
           </div>
           <span className="text-[11px] text-slate-500">{results.length} total tests</span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl">
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl">
           <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
             <span>Achievements</span>
             <Award className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="my-2">
-            <span className="text-3xl font-black font-mono text-cyan-400">
+            <span className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-cyan-400">
               {achievements.filter((a) => a.isUnlocked).length} / {achievements.length}
             </span>
           </div>
@@ -173,7 +173,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       </div>
 
       {/* Settings & Preferences Form */}
-      <div className="p-8 rounded-3xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col gap-6">
+      <div className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col gap-5 sm:gap-6">
         <div className="flex items-center gap-2 pb-4 border-b border-sky-500/15">
           <Settings className="w-5 h-5 text-cyan-400" />
           <h3 className="text-lg font-bold text-white">Settings & Kinetic Preferences</h3>
@@ -181,7 +181,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
         <form onSubmit={handleSave} className="flex flex-col gap-6">
           {/* Animated Cartoon Avatar Customization Section */}
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-sky-500/20 flex flex-col gap-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/60 border border-sky-500/20 flex flex-col gap-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                 <span className="text-xs uppercase font-mono text-cyan-400 font-bold block">
@@ -201,7 +201,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               </button>
             </div>
 
-            <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
+            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 sm:gap-3">
               {PRESET_CARTOON_AVATARS.map((item) => (
                 <button
                   key={item.id}
@@ -217,7 +217,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   <img
                     src={item.url}
                     alt={item.name}
-                    className="w-10 h-10 rounded-lg bg-slate-900 object-cover"
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-slate-900 object-cover"
                     onError={(e) => {
                       e.currentTarget.src = DEFAULT_CARTOON_AVATAR_FALLBACK;
                     }}
@@ -228,7 +228,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <div>
               <label className="text-xs uppercase font-mono text-slate-400 block mb-1.5">Full Name</label>
               <input
@@ -282,7 +282,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <Palette className="w-4 h-4 text-cyan-400" />
               <span>Cosmic Color Palette</span>
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
               {themes.map((t) => (
                 <button
                   key={t.id}
@@ -302,8 +302,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           </div>
 
           {/* Save & Backup Controls */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-sky-500/10">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-sky-500/10">
+            <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={() => {
@@ -322,7 +322,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   a.click();
                   URL.revokeObjectURL(url);
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-slate-300 hover:text-white text-xs font-semibold transition"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-slate-300 hover:text-white text-xs font-semibold transition"
               >
                 <Download className="w-4 h-4 text-cyan-400" />
                 <span>Download Data Backup</span>
@@ -338,7 +338,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-white font-bold text-xs shadow-lg transition hover:scale-[1.02] active:scale-95"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-white font-bold text-xs shadow-lg transition hover:scale-[1.02] active:scale-95"
             >
               Save Changes
             </button>

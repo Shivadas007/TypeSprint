@@ -9,8 +9,8 @@ interface LegalViewProps {
 
 export const LegalView: React.FC<LegalViewProps> = ({ type, onBackHome, onSwitchType }) => {
   return (
-    <div className="w-full max-w-4xl mx-auto py-8 flex flex-col gap-6 animate-in fade-in duration-300">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="w-full max-w-4xl mx-auto py-4 sm:py-8 flex flex-col gap-4 sm:gap-6 animate-in fade-in duration-300">
+      <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
         <button
           type="button"
           onClick={onBackHome}
@@ -20,11 +20,11 @@ export const LegalView: React.FC<LegalViewProps> = ({ type, onBackHome, onSwitch
           <span>Back to Practice</span>
         </button>
 
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold">
+        <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold">
           <button
             type="button"
             onClick={() => onSwitchType('privacy')}
-            className={`px-4 py-1.5 rounded-lg transition ${
+            className={`px-3 sm:px-4 py-1.5 rounded-lg transition ${
               type === 'privacy' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -33,7 +33,7 @@ export const LegalView: React.FC<LegalViewProps> = ({ type, onBackHome, onSwitch
           <button
             type="button"
             onClick={() => onSwitchType('terms')}
-            className={`px-4 py-1.5 rounded-lg transition ${
+            className={`px-3 sm:px-4 py-1.5 rounded-lg transition ${
               type === 'terms' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -42,15 +42,15 @@ export const LegalView: React.FC<LegalViewProps> = ({ type, onBackHome, onSwitch
         </div>
       </div>
 
-      <article className="p-8 sm:p-10 rounded-3xl bg-[#060c1d]/90 border border-sky-500/25 backdrop-blur-xl shadow-2xl space-y-6">
+      <article className="p-5 sm:p-10 rounded-2xl sm:rounded-3xl bg-[#060c1d]/90 border border-sky-500/25 backdrop-blur-xl shadow-2xl space-y-6">
         {type === 'privacy' ? (
           <>
-            <header className="border-b border-sky-500/15 pb-6 space-y-2">
+            <header className="border-b border-sky-500/15 pb-5 sm:pb-6 space-y-2">
               <div className="flex items-center gap-2 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider">
                 <Shield className="w-4 h-4" />
                 <span>Legal & Data Protection</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Privacy Policy</h1>
+              <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">Privacy Policy</h1>
               <p className="text-xs text-slate-400 font-mono">Last Updated: November 13, 2026</p>
             </header>
 

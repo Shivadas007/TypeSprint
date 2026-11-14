@@ -11,6 +11,7 @@ interface KeyboardVisualizerProps {
 interface KeyConfig {
   key: string;
   display?: string;
+  mobileDisplay?: string;
   units: number; // Relative ANSI width units (every row totals 15u for full-width edge-to-edge alignment)
   hand: 'left' | 'right' | 'thumb';
   zone: 'pinky' | 'ring' | 'middle' | 'index' | 'thumb';
@@ -32,11 +33,11 @@ const KEYBOARD_ROWS: KeyConfig[][] = [
     { key: '0', units: 1, hand: 'right', zone: 'pinky' },
     { key: '-', units: 1, hand: 'right', zone: 'pinky' },
     { key: '=', units: 1, hand: 'right', zone: 'pinky' },
-    { key: 'Backspace', display: '⌫ Backspace', units: 2, hand: 'right', zone: 'pinky' },
+    { key: 'Backspace', display: '⌫ Backspace', mobileDisplay: '⌫', units: 2, hand: 'right', zone: 'pinky' },
   ],
   // Row 2 (Tab / QWERTY: 1.5 + 12*1 + 1.5 = 15u)
   [
-    { key: 'Tab', display: 'Tab ⇥', units: 1.5, hand: 'left', zone: 'pinky' },
+    { key: 'Tab', display: 'Tab ⇥', mobileDisplay: 'Tab', units: 1.5, hand: 'left', zone: 'pinky' },
     { key: 'q', units: 1, hand: 'left', zone: 'pinky' },
     { key: 'w', units: 1, hand: 'left', zone: 'ring' },
     { key: 'e', units: 1, hand: 'left', zone: 'middle' },
@@ -53,7 +54,7 @@ const KEYBOARD_ROWS: KeyConfig[][] = [
   ],
   // Row 3 (Home row: ASDF JKL;: 1.75 + 11*1 + 2.25 = 15u)
   [
-    { key: 'Caps', display: 'Caps Lock', units: 1.75, hand: 'left', zone: 'pinky' },
+    { key: 'Caps', display: 'Caps Lock', mobileDisplay: 'Caps', units: 1.75, hand: 'left', zone: 'pinky' },
     { key: 'a', units: 1, hand: 'left', zone: 'pinky' },
     { key: 's', units: 1, hand: 'left', zone: 'ring' },
     { key: 'd', units: 1, hand: 'left', zone: 'middle' },
@@ -65,11 +66,11 @@ const KEYBOARD_ROWS: KeyConfig[][] = [
     { key: 'l', units: 1, hand: 'right', zone: 'ring' },
     { key: ';', units: 1, hand: 'right', zone: 'pinky' },
     { key: "'", units: 1, hand: 'right', zone: 'pinky' },
-    { key: 'Enter', display: '↵ Enter', units: 2.25, hand: 'right', zone: 'pinky' },
+    { key: 'Enter', display: '↵ Enter', mobileDisplay: '↵', units: 2.25, hand: 'right', zone: 'pinky' },
   ],
   // Row 4 (Shift / ZXCV BNM: 2.25 + 10*1 + 2.75 = 15u)
   [
-    { key: 'Shift', display: '⇧ Shift', units: 2.25, hand: 'left', zone: 'pinky' },
+    { key: 'Shift', display: '⇧ Shift', mobileDisplay: '⇧', units: 2.25, hand: 'left', zone: 'pinky' },
     { key: 'z', units: 1, hand: 'left', zone: 'pinky' },
     { key: 'x', units: 1, hand: 'left', zone: 'ring' },
     { key: 'c', units: 1, hand: 'left', zone: 'middle' },
@@ -80,13 +81,13 @@ const KEYBOARD_ROWS: KeyConfig[][] = [
     { key: ',', units: 1, hand: 'right', zone: 'middle' },
     { key: '.', units: 1, hand: 'right', zone: 'ring' },
     { key: '/', units: 1, hand: 'right', zone: 'pinky' },
-    { key: 'ShiftRight', display: '⇧ Shift', units: 2.75, hand: 'right', zone: 'pinky' },
+    { key: 'ShiftRight', display: '⇧ Shift', mobileDisplay: '⇧', units: 2.75, hand: 'right', zone: 'pinky' },
   ],
   // Row 5 (Space bar row: 1.5 + 1.5 + 9 + 1.5 + 1.5 = 15u)
   [
     { key: 'Ctrl', display: 'Ctrl', units: 1.5, hand: 'left', zone: 'pinky' },
     { key: 'Alt', display: 'Alt', units: 1.5, hand: 'left', zone: 'thumb' },
-    { key: ' ', display: 'Space Flow', units: 9, hand: 'thumb', zone: 'thumb' },
+    { key: ' ', display: 'Space Flow', mobileDisplay: 'Space', units: 9, hand: 'thumb', zone: 'thumb' },
     { key: 'AltRight', display: 'Alt', units: 1.5, hand: 'right', zone: 'thumb' },
     { key: 'CtrlRight', display: 'Ctrl', units: 1.5, hand: 'right', zone: 'pinky' },
   ],
@@ -134,35 +135,35 @@ export const KeyboardVisualizer: React.FC<KeyboardVisualizerProps> = ({
 
   return (
     <div
-      className={`w-full p-4 sm:p-6 lg:p-7 rounded-3xl bg-[#060c1c]/85 border border-sky-500/20 backdrop-blur-md shadow-2xl ${className}`}
+      className={`w-full p-3 sm:p-5 lg:p-7 rounded-2xl sm:rounded-3xl bg-[#060c1c]/85 border border-sky-500/20 backdrop-blur-md shadow-2xl ${className}`}
       role="region"
       aria-label="Full-Sized Interactive Finger Zone Keyboard Visualizer"
     >
       {/* Legend & Stats banner */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-sky-500/15 text-xs sm:text-sm font-semibold">
-        <div className="flex flex-wrap items-center gap-4 text-slate-300">
+      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-sky-500/15 text-[11px] sm:text-xs lg:text-sm font-semibold">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-slate-300">
           <span className="font-bold uppercase tracking-wider text-sky-400">Finger Zones</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-purple-400" /> Pinky</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-400" /> Ring</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-cyan-400" /> Middle</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-teal-400" /> Index</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-purple-400" /> Pinky</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-blue-400" /> Ring</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-cyan-400" /> Middle</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-teal-400" /> Index</span>
         </div>
 
         {showHeatmap && (
-          <div className="flex flex-wrap items-center gap-3 text-slate-300">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-slate-300">
             <span className="font-bold uppercase tracking-wider text-cyan-400">Accuracy Heatmap:</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-500/70" /> &gt;90%</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-500/70" /> 75-90%</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500/80" /> &lt;75%</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-emerald-500/70" /> &gt;90%</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-amber-500/70" /> 75-90%</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-red-500/80" /> &lt;75%</span>
           </div>
         )}
       </div>
 
-      {/* Full-Sized Edge-to-Edge ANSI Keyboard Grid */}
-      <div className="w-full overflow-x-auto pb-1">
-        <div className="w-full min-w-[700px] flex flex-col gap-2 sm:gap-2.5 select-none">
+      {/* Edge-to-Edge ANSI Keyboard Grid (scales cleanly on every phone 320px+ up to desktop) */}
+      <div className="w-full min-w-0">
+        <div className="w-full flex flex-col gap-1 sm:gap-2 lg:gap-2.5 select-none">
           {KEYBOARD_ROWS.map((row, rIdx) => (
-            <div key={rIdx} className="w-full flex items-stretch gap-1.5 sm:gap-2">
+            <div key={rIdx} className="w-full flex items-stretch gap-[2px] sm:gap-1.5 lg:gap-2">
               {row.map((item, kIdx) => {
                 const isPressed =
                   normalizedActiveKey === item.key.toLowerCase() ||
@@ -172,14 +173,16 @@ export const KeyboardVisualizer: React.FC<KeyboardVisualizerProps> = ({
                 const heatmapClass = showHeatmap ? getHeatmapColor(item.key) : '';
                 const zoneBorder = getFingerZoneColor(item.zone);
                 const isModifier = item.units > 1;
+                const desktopLabel = item.display || item.key.toUpperCase();
+                const mobileLabel = item.mobileDisplay || desktopLabel;
 
                 return (
                   <div
                     key={kIdx}
                     style={{ flex: `${item.units} 1 0%` }}
                     className={`
-                      h-12 sm:h-14 md:h-16 lg:h-[68px] px-1.5 rounded-xl flex flex-col items-center justify-center font-mono transition-all duration-100
-                      ${isModifier ? 'text-xs sm:text-sm font-semibold' : 'text-base sm:text-lg md:text-xl font-bold'}
+                      min-w-0 h-8 sm:h-11 md:h-14 lg:h-[64px] px-[2px] sm:px-1.5 rounded-md sm:rounded-xl flex flex-col items-center justify-center font-mono transition-all duration-100
+                      ${isModifier ? 'text-[8px] sm:text-xs md:text-sm font-semibold' : 'text-[10px] sm:text-base md:text-lg lg:text-xl font-bold'}
                       ${isPressed
                         ? 'bg-gradient-to-b from-cyan-400 to-blue-600 text-black shadow-[0_0_20px_#38bdf8] scale-95 border border-white'
                         : showHeatmap
@@ -188,9 +191,16 @@ export const KeyboardVisualizer: React.FC<KeyboardVisualizerProps> = ({
                       }
                     `}
                   >
-                    <span className="truncate max-w-full">{item.display || item.key.toUpperCase()}</span>
+                    {mobileLabel !== desktopLabel ? (
+                      <>
+                        <span className="sm:hidden truncate max-w-full">{mobileLabel}</span>
+                        <span className="hidden sm:inline truncate max-w-full">{desktopLabel}</span>
+                      </>
+                    ) : (
+                      <span className="truncate max-w-full">{desktopLabel}</span>
+                    )}
                     {showHeatmap && weakKeysMap[item.key.toLowerCase()]?.totalTyped > 0 && (
-                      <span className="text-[10px] tabular-nums opacity-90 mt-0.5">
+                      <span className="text-[7px] sm:text-[10px] tabular-nums opacity-90 mt-0.5 leading-none">
                         {Math.round((1 - weakKeysMap[item.key.toLowerCase()].errorRate) * 100)}%
                       </span>
                     )}

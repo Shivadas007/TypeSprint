@@ -8,16 +8,16 @@ interface NotFoundViewProps {
 
 export const NotFoundView: React.FC<NotFoundViewProps> = ({ attemptedPath, onReturnHome }) => {
   return (
-    <div className="w-full max-w-xl mx-auto my-14 p-8 sm:p-10 rounded-3xl bg-[#060c1d]/90 border border-sky-500/30 backdrop-blur-2xl text-center space-y-6 shadow-2xl animate-in fade-in duration-300">
-      <div className="w-20 h-20 mx-auto rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-[0_0_25px_rgba(12,151,224,0.2)]">
-        <Compass className="w-10 h-10 text-cyan-400" />
+    <div className="w-full max-w-xl mx-auto my-6 sm:my-14 p-6 sm:p-10 rounded-2xl sm:rounded-3xl bg-[#060c1d]/90 border border-sky-500/30 backdrop-blur-2xl text-center space-y-5 sm:space-y-6 shadow-2xl animate-in fade-in duration-300">
+      <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-[0_0_25px_rgba(12,151,224,0.2)]">
+        <Compass className="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400" />
       </div>
 
       <div className="space-y-2">
         <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold">
           Error 404 · Route Not Found
         </span>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
           Lost Your Flow?
         </h1>
         <p className="text-sm text-slate-400 leading-relaxed max-w-md mx-auto">

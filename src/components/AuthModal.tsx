@@ -44,11 +44,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-md bg-[#070e24] border border-sky-500/30 rounded-3xl p-7 shadow-2xl relative overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="w-full max-w-md max-h-[90dvh] overflow-y-auto bg-[#070e24] border border-sky-500/30 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl relative">
         <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="flex items-center justify-between pb-4 border-b border-sky-500/20 mb-5">
+        <div className="flex items-center justify-between pb-4 border-b border-sky-500/20 mb-5 relative z-10">
           <div>
             <h3 className="text-xl font-black text-white tracking-tight">
               {mode === 'login' ? 'Sign In to Type Sprint' : 'Join Type Sprint'}

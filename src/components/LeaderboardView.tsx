@@ -33,28 +33,28 @@ export const LeaderboardView: React.FC = () => {
   const remaining = filtered.slice(searchTerm ? 0 : 3);
 
   return (
-    <div className="w-full flex flex-col gap-8 pb-12 animate-in fade-in duration-300">
-      <div className="text-center max-w-2xl mx-auto space-y-2">
+    <div className="w-full flex flex-col gap-6 sm:gap-8 pb-10 sm:pb-12 animate-in fade-in duration-300">
+      <div className="text-center max-w-2xl mx-auto space-y-2 px-1">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">
           <Globe className="w-3.5 h-3.5" />
           <span>Global Speed Ranking Tier</span>
         </div>
-        <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
           Cosmic Sprint Leaderboards
         </h2>
-        <p className="text-slate-400 text-sm">
+        <p className="text-slate-400 text-xs sm:text-sm">
           Real-time verified rankings synced directly from registered athlete profiles.
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl">
-        <div className="flex items-center gap-1.5 p-1 bg-slate-900/80 rounded-xl border border-slate-800">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5 p-1 bg-slate-900/80 rounded-xl border border-slate-800 w-full sm:w-auto">
           {(['daily', 'weekly', 'monthly', 'allTime'] as const).map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setTimeframe(t)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold capitalize transition ${
+              className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold capitalize transition ${
                 timeframe === t
                   ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-white'
@@ -78,9 +78,9 @@ export const LeaderboardView: React.FC = () => {
       </div>
 
       {!searchTerm && topThree.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end pt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-end pt-2 sm:pt-4">
           {topThree[1] && (
-            <div className="order-2 md:order-1 p-6 rounded-3xl bg-gradient-to-b from-[#091530] to-[#040816] border border-slate-400/40 backdrop-blur-xl shadow-xl flex flex-col items-center text-center relative overflow-hidden">
+            <div className="order-2 md:order-1 min-w-0 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#091530] to-[#040816] border border-slate-400/40 backdrop-blur-xl shadow-xl flex flex-col items-center text-center relative overflow-hidden">
               <div className="absolute top-3 left-4 text-xs font-mono font-bold text-slate-400">#2 SILVER</div>
               <div className="w-16 h-16 rounded-full border-2 border-slate-300 p-1 mb-3 shadow-[0_0_20px_rgba(203,213,225,0.4)]">
                 <img
@@ -89,11 +89,11 @@ export const LeaderboardView: React.FC = () => {
                   className="w-full h-full rounded-full bg-slate-900 object-cover"
                 />
               </div>
-              <h4 className="font-bold text-white text-base">{topThree[1].name}</h4>
-              <span className="text-xs font-mono text-slate-400">@{topThree[1].username}</span>
+              <h4 className="font-bold text-white text-base truncate max-w-full">{topThree[1].name}</h4>
+              <span className="text-xs font-mono text-slate-400 truncate max-w-full">@{topThree[1].username}</span>
 
-              <div className="my-4">
-                <span className="text-4xl font-black font-mono text-slate-200">{topThree[1].wpm}</span>
+              <div className="my-3 sm:my-4">
+                <span className="text-3xl sm:text-4xl font-black font-mono text-slate-200">{topThree[1].wpm}</span>
                 <span className="text-xs text-slate-400 block uppercase">WPM</span>
               </div>
 
@@ -106,7 +106,7 @@ export const LeaderboardView: React.FC = () => {
           )}
 
           {topThree[0] && (
-            <div className="order-1 md:order-2 p-8 rounded-3xl bg-gradient-to-b from-[#1c1808] via-[#0d1633] to-[#040816] border-2 border-amber-400/60 backdrop-blur-2xl shadow-[0_0_40px_rgba(245,158,11,0.25)] flex flex-col items-center text-center relative overflow-hidden md:scale-105">
+            <div className="order-1 md:order-2 min-w-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#1c1808] via-[#0d1633] to-[#040816] border-2 border-amber-400/60 backdrop-blur-2xl shadow-[0_0_40px_rgba(245,158,11,0.25)] flex flex-col items-center text-center relative overflow-hidden md:scale-[1.03]">
               <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-48 bg-amber-500/20 rounded-full blur-2xl pointer-events-none" />
               <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400 mb-2">
                 <Crown className="w-4 h-4 text-amber-400" />
@@ -120,11 +120,11 @@ export const LeaderboardView: React.FC = () => {
                   className="w-full h-full rounded-full bg-slate-900 object-cover"
                 />
               </div>
-              <h4 className="font-extrabold text-white text-lg">{topThree[0].name}</h4>
-              <span className="text-xs font-mono text-amber-300">@{topThree[0].username}</span>
+              <h4 className="font-extrabold text-white text-lg truncate max-w-full">{topThree[0].name}</h4>
+              <span className="text-xs font-mono text-amber-300 truncate max-w-full">@{topThree[0].username}</span>
 
-              <div className="my-4">
-                <span className="text-5xl font-black font-mono text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+              <div className="my-3 sm:my-4">
+                <span className="text-4xl sm:text-5xl font-black font-mono text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">
                   {topThree[0].wpm}
                 </span>
                 <span className="text-xs text-slate-300 block uppercase font-bold">WPM</span>
@@ -139,7 +139,7 @@ export const LeaderboardView: React.FC = () => {
           )}
 
           {topThree[2] && (
-            <div className="order-3 p-6 rounded-3xl bg-gradient-to-b from-[#180e07] to-[#040816] border border-orange-600/40 backdrop-blur-xl shadow-xl flex flex-col items-center text-center relative overflow-hidden">
+            <div className="order-3 min-w-0 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#180e07] to-[#040816] border border-orange-600/40 backdrop-blur-xl shadow-xl flex flex-col items-center text-center relative overflow-hidden">
               <div className="absolute top-3 left-4 text-xs font-mono font-bold text-orange-400">#3 BRONZE</div>
               <div className="w-16 h-16 rounded-full border-2 border-orange-500 p-1 mb-3 shadow-[0_0_20px_rgba(249,115,22,0.4)]">
                 <img
@@ -148,11 +148,11 @@ export const LeaderboardView: React.FC = () => {
                   className="w-full h-full rounded-full bg-slate-900 object-cover"
                 />
               </div>
-              <h4 className="font-bold text-white text-base">{topThree[2].name}</h4>
-              <span className="text-xs font-mono text-slate-400">@{topThree[2].username}</span>
+              <h4 className="font-bold text-white text-base truncate max-w-full">{topThree[2].name}</h4>
+              <span className="text-xs font-mono text-slate-400 truncate max-w-full">@{topThree[2].username}</span>
 
-              <div className="my-4">
-                <span className="text-4xl font-black font-mono text-orange-400">{topThree[2].wpm}</span>
+              <div className="my-3 sm:my-4">
+                <span className="text-3xl sm:text-4xl font-black font-mono text-orange-400">{topThree[2].wpm}</span>
                 <span className="text-xs text-slate-400 block uppercase">WPM</span>
               </div>
 
@@ -166,7 +166,7 @@ export const LeaderboardView: React.FC = () => {
         </div>
       )}
 
-      <div className="p-6 rounded-3xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl overflow-x-auto">
+      <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl overflow-x-auto no-scrollbar">
         {loading ? (
           <div className="py-10 text-center text-xs font-mono text-slate-400">
             Loading live global rankings...
@@ -176,7 +176,7 @@ export const LeaderboardView: React.FC = () => {
             No ranked athletes yet. Sign in and complete a sprint to claim #1.
           </div>
         ) : (
-          <table className="w-full text-left text-xs">
+          <table className="w-full min-w-[600px] text-left text-xs">
             <thead>
               <tr className="border-b border-slate-800 text-slate-500 uppercase font-mono tracking-wider">
                 <th className="py-3 px-4">Rank</th>

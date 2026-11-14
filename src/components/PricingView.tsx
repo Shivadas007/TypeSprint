@@ -87,18 +87,18 @@ export const PricingView: React.FC<PricingViewProps> = ({ user }) => {
   ];
 
   return (
-    <div className="w-full flex flex-col gap-8 pb-12 animate-in fade-in duration-300">
+    <div className="w-full flex flex-col gap-6 sm:gap-8 pb-10 sm:pb-12 animate-in fade-in duration-300">
       {/* Title & Currency Switcher */}
-      <div className="text-center max-w-2xl mx-auto space-y-3">
-        <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+      <div className="text-center max-w-2xl mx-auto space-y-3 px-1">
+        <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
           Invest in Your Typing Velocity
         </h2>
-        <p className="text-slate-400 text-sm">
+        <p className="text-slate-400 text-xs sm:text-sm">
           Master keyboard mechanics with AI-powered coaching, real-time biomechanical diagnostics, and custom training.
         </p>
 
         {/* Currency & Billing Interval Controls */}
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
           {/* Monthly / Annual Toggle */}
           <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold">
             <button
@@ -147,7 +147,7 @@ export const PricingView: React.FC<PricingViewProps> = ({ user }) => {
       </div>
 
       {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
         {plans.map((p) => {
           if (p.isComingSoon) {
             // Faded Pro & Grandmaster Subscriptions (Nothing else shown instead of Coming Soon)
@@ -155,7 +155,7 @@ export const PricingView: React.FC<PricingViewProps> = ({ user }) => {
               <div
                 key={p.id}
                 onClick={() => setComingSoonPlan(p.name)}
-                className="p-7 rounded-3xl backdrop-blur-2xl flex flex-col justify-between transition-all duration-300 relative bg-[#060c1d]/50 border-2 border-dashed border-slate-700/60 opacity-50 hover:opacity-75 filter grayscale-[20%] hover:scale-[1.01] cursor-pointer shadow-lg group select-none"
+                className="p-5 sm:p-7 rounded-2xl sm:rounded-3xl backdrop-blur-2xl flex flex-col justify-between transition-all duration-300 relative bg-[#060c1d]/50 border-2 border-dashed border-slate-700/60 opacity-50 hover:opacity-75 filter grayscale-[20%] hover:scale-[1.01] cursor-pointer shadow-lg group select-none"
               >
                 {/* Coming Soon Top Badge */}
                 <div className="flex items-center justify-between mb-3">
@@ -212,7 +212,7 @@ export const PricingView: React.FC<PricingViewProps> = ({ user }) => {
           return (
             <div
               key={p.id}
-              className="p-7 rounded-3xl backdrop-blur-2xl flex flex-col justify-between transition-all duration-200 relative bg-[#060c1d]/90 border border-cyan-500/30 shadow-xl"
+              className="p-5 sm:p-7 rounded-2xl sm:rounded-3xl backdrop-blur-2xl flex flex-col justify-between transition-all duration-200 relative bg-[#060c1d]/90 border border-cyan-500/30 shadow-xl"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
@@ -255,11 +255,11 @@ export const PricingView: React.FC<PricingViewProps> = ({ user }) => {
       {/* Coming Soon Interactive Modal */}
       {comingSoonPlan && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
           onClick={() => setComingSoonPlan(null)}
         >
           <div
-            className="w-full max-w-sm bg-[#070e24] border border-amber-500/40 rounded-3xl p-7 shadow-2xl flex flex-col items-center text-center gap-4 relative animate-in zoom-in-95"
+            className="w-full max-w-sm max-h-[90dvh] overflow-y-auto bg-[#070e24] border border-amber-500/40 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl flex flex-col items-center text-center gap-4 relative animate-in zoom-in-95"
             onClick={(e) => e.stopPropagation()}
           >
             <button

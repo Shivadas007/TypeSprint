@@ -105,7 +105,9 @@
   }
 
   html {
-    font-size: 17.5px;
+    font-size: clamp(14.5px, 0.35vw + 13.2px, 17px);
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -116,7 +118,18 @@
     color: var(--color-text-main);
     font-size: 1rem;
     line-height: 1.6;
+    overflow-x: clip;
+    min-height: 100dvh;
   }
+}
+
+/* Hide scrollbars cleanly where horizontal touch scroll is enabled */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Custom Scrollbars */
@@ -221,13 +234,17 @@ body[data-theme="light"],
   color: #0f172a !important;
 }
 
-[data-theme="light"] header nav button,
-[data-theme="light"] header button {
+[data-theme="light"] header nav button:not([data-active="true"]),
+[data-theme="light"] header button:not([data-active="true"]):not([data-light-preserve="true"]):not(.bg-gradient-to-r) {
   color: #334155 !important;
 }
 
+[data-theme="light"] header nav button[data-active="true"] {
+  color: #0369a1 !important;
+}
+
 [data-theme="light"] header nav button:hover,
-[data-theme="light"] header button:hover,
+[data-theme="light"] header button:not([data-light-preserve="true"]):not(.bg-gradient-to-r):hover,
 [data-theme="light"] nav button:hover,
 [data-theme="light"] .hover\:text-white:hover,
 [data-theme="light"] .hover\:text-slate-100:hover,

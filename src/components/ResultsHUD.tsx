@@ -106,113 +106,127 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
     }
   }
 
-  // Draw Speed Curve Chart
+  // Draw Speed Curve Chart (automatically re-renders cleanly on resize/orientation changes)
   useEffect(() => {
     const canvas = chartCanvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const rect = canvas.getBoundingClientRect();
-    const w = (canvas.width = rect.width * dpr);
-    const h = (canvas.height = rect.height * dpr);
-    ctx.scale(dpr, dpr);
+    const drawChart = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const width = rect.width;
-    const height = rect.height;
-    ctx.clearRect(0, 0, width, height);
+      const width = rect.width;
+      const height = rect.height;
+      ctx.clearRect(0, 0, width, height);
 
-    const samples = result.wpmPerSecond.length > 0 ? result.wpmPerSecond : [result.wpm];
-    const maxVal = Math.max(bestWpm, ...samples, 40) * 1.15;
-    const padL = 40;
-    const padR = 15;
-    const padT = 20;
-    const padB = 30;
-    const chartW = width - padL - padR;
-    const chartH = height - padT - padB;
+      const samples = result.wpmPerSecond.length > 0 ? result.wpmPerSecond : [result.wpm];
+      const maxVal = Math.max(bestWpm, ...samples, 40) * 1.15;
+      const padL = 36;
+      const padR = 12;
+      const padT = 20;
+      const padB = 24;
+      const chartW = width - padL - padR;
+      const chartH = height - padT - padB;
 
-    // Grid lines
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.1)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 4; i++) {
-      const y = padT + (chartH / 4) * i;
+      // Grid lines
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padT + (chartH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(width - padR, y);
+        ctx.stroke();
+
+        const val = Math.round(maxVal - (maxVal / 4) * i);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(String(val), padL - 8, y + 3);
+      }
+
+      // Best WPM reference line
+      if (bestWpm > 0) {
+        const bestY = padT + chartH - (bestWpm / maxVal) * chartH;
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(padL, bestY);
+        ctx.lineTo(width - padR, bestY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.textAlign = 'right';
+        ctx.fillText(`Best: ${bestWpm}`, width - padR - 4, bestY - 6);
+      }
+
+      if (samples.length < 2) {
+        ctx.fillStyle = '#0C97E0';
+        ctx.fillRect(
+          padL + chartW / 2 - 20,
+          padT + chartH - (samples[0] / maxVal) * chartH,
+          40,
+          (samples[0] / maxVal) * chartH
+        );
+        return;
+      }
+
+      // Speed line path
       ctx.beginPath();
-      ctx.moveTo(padL, y);
-      ctx.lineTo(width - padR, y);
+      const stepX = chartW / (samples.length - 1);
+
+      samples.forEach((val, idx) => {
+        const x = padL + idx * stepX;
+        const y = padT + chartH - (val / maxVal) * chartH;
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = '#0C97E0';
+      ctx.shadowBlur = 12;
       ctx.stroke();
+      ctx.shadowBlur = 0;
 
-      const val = Math.round(maxVal - (maxVal / 4) * i);
-      ctx.fillStyle = '#64748b';
-      ctx.font = '10px "JetBrains Mono", monospace';
-      ctx.textAlign = 'right';
-      ctx.fillText(String(val), padL - 8, y + 3);
-    }
-
-    // Best WPM reference line
-    if (bestWpm > 0) {
-      const bestY = padT + chartH - (bestWpm / maxVal) * chartH;
-      ctx.setLineDash([4, 4]);
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(padL, bestY);
-      ctx.lineTo(width - padR, bestY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      ctx.fillStyle = '#f59e0b';
-      ctx.fillText(`Best: ${bestWpm}`, width - padR - 5, bestY - 6);
-    }
-
-    if (samples.length < 2) {
-      // Draw single bar
-      ctx.fillStyle = '#0C97E0';
-      ctx.fillRect(padL + chartW / 2 - 20, padT + chartH - (samples[0] / maxVal) * chartH, 40, (samples[0] / maxVal) * chartH);
-      return;
-    }
-
-    // Speed line path
-    ctx.beginPath();
-    const stepX = chartW / (samples.length - 1);
-
-    samples.forEach((val, idx) => {
-      const x = padL + idx * stepX;
-      const y = padT + chartH - (val / maxVal) * chartH;
-      if (idx === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    });
-
-    // Stroke path
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 3;
-    ctx.shadowColor = '#0C97E0';
-    ctx.shadowBlur = 12;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Fill area below line
-    ctx.lineTo(padL + (samples.length - 1) * stepX, padT + chartH);
-    ctx.lineTo(padL, padT + chartH);
-    ctx.closePath();
-    const grad = ctx.createLinearGradient(0, padT, 0, padT + chartH);
-    grad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
-    grad.addColorStop(1, 'rgba(12, 151, 224, 0.02)');
-    ctx.fillStyle = grad;
-    ctx.fill();
-
-    // Data dots
-    samples.forEach((val, idx) => {
-      const x = padL + idx * stepX;
-      const y = padT + chartH - (val / maxVal) * chartH;
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff';
+      ctx.lineTo(padL + (samples.length - 1) * stepX, padT + chartH);
+      ctx.lineTo(padL, padT + chartH);
+      ctx.closePath();
+      const grad = ctx.createLinearGradient(0, padT, 0, padT + chartH);
+      grad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+      grad.addColorStop(1, 'rgba(12, 151, 224, 0.02)');
+      ctx.fillStyle = grad;
       ctx.fill();
-      ctx.strokeStyle = '#0C97E0';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    });
+
+      samples.forEach((val, idx) => {
+        const x = padL + idx * stepX;
+        const y = padT + chartH - (val / maxVal) * chartH;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = '#0C97E0';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+    };
+
+    drawChart();
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(drawChart) : null;
+    observer?.observe(canvas);
+    window.addEventListener('resize', drawChart);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', drawChart);
+    };
   }, [result, bestWpm]);
 
   // Certificate Renderer
@@ -474,9 +488,9 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
       )}
 
       {/* Main Metric Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Giant Speed Orb Card */}
-        <div className="md:col-span-2 p-6 rounded-2xl bg-gradient-to-br from-[#07112c]/90 via-[#0a1738]/80 to-[#040817]/90 border border-sky-500/30 backdrop-blur-xl shadow-2xl flex flex-col justify-between">
+        <div className="sm:col-span-2 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#07112c]/90 via-[#0a1738]/80 to-[#040817]/90 border border-sky-500/30 backdrop-blur-xl shadow-2xl flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase font-mono tracking-widest text-slate-400">Velocity</span>
@@ -492,11 +506,11 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
               )}
             </div>
 
-            <div className="flex items-baseline gap-3 my-2">
-              <span className="text-6xl sm:text-7xl font-extrabold font-mono tracking-tight bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-700 dark:from-white dark:via-cyan-200 dark:to-sky-400 bg-clip-text text-transparent drop-shadow-none dark:drop-shadow-[0_0_25px_rgba(56,189,248,0.5)]">
+            <div className="flex items-baseline gap-2.5 sm:gap-3 my-2">
+              <span className="text-5xl sm:text-7xl font-extrabold font-mono tracking-tight bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-700 dark:from-white dark:via-cyan-200 dark:to-sky-400 bg-clip-text text-transparent drop-shadow-none dark:drop-shadow-[0_0_25px_rgba(56,189,248,0.5)]">
                 {result.wpm}
               </span>
-              <span className="text-xl font-bold text-slate-600 dark:text-slate-400">WPM</span>
+              <span className="text-lg sm:text-xl font-bold text-slate-600 dark:text-slate-400">WPM</span>
             </div>
           </div>
 
@@ -513,11 +527,11 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
         </div>
 
         {/* Accuracy Card */}
-        <div className="p-6 rounded-2xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col justify-between">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col justify-between">
           <span className="text-xs uppercase font-mono tracking-widest text-slate-400">Accuracy</span>
           <div className="my-2">
             <span
-              className={`text-5xl font-extrabold font-mono ${
+              className={`text-4xl sm:text-5xl font-extrabold font-mono ${
                 result.accuracy >= 98
                   ? 'text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.4)]'
                   : result.accuracy >= 90
@@ -534,10 +548,10 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
         </div>
 
         {/* Consistency Card */}
-        <div className="p-6 rounded-2xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col justify-between">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col justify-between">
           <span className="text-xs uppercase font-mono tracking-widest text-slate-400">Consistency</span>
           <div className="my-2">
-            <span className="text-5xl font-extrabold font-mono text-purple-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+            <span className="text-4xl sm:text-5xl font-extrabold font-mono text-purple-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
               {result.consistency}%
             </span>
           </div>
@@ -548,17 +562,17 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
       </div>
 
       {/* Speed Progression Timeline Chart */}
-      <div className="p-6 rounded-2xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl shadow-xl">
-        <div className="flex items-center justify-between mb-4">
+      <div className="p-4 sm:p-6 rounded-2xl bg-[#060c1d]/85 border border-sky-500/20 backdrop-blur-xl shadow-xl">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
           <div className="flex items-center gap-2">
-            <BarChart2 className="w-4 h-4 text-cyan-400" />
+            <BarChart2 className="w-4 h-4 text-cyan-400 shrink-0" />
             <h4 className="text-xs uppercase font-mono tracking-widest text-slate-300">
-              Velocity Telemetry Curve (Second-by-Second)
+              Velocity Telemetry Curve
             </h4>
           </div>
           <span className="text-xs text-slate-500 font-mono">Duration: {result.timeTaken}s</span>
         </div>
-        <canvas ref={chartCanvasRef} className="w-full h-44 block" />
+        <canvas ref={chartCanvasRef} className="w-full h-40 sm:h-44 block" />
       </div>
 
       {/* Weak Keys Heatmap Section */}
@@ -622,40 +636,40 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
       </div>
 
       {/* Action Buttons Row */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pt-2">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
           <button
             type="button"
             onClick={onRetry}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-sm shadow-[0_0_20px_rgba(12,151,224,0.4)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-[0_0_20px_rgba(12,151,224,0.4)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer whitespace-nowrap"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-4 h-4 shrink-0" />
             <span>Next Sprint (Tab)</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowShareModal(true)}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-900/90 border border-sky-500/30 text-sky-300 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-5 py-3 rounded-xl bg-slate-900/90 border border-sky-500/30 text-sky-300 hover:text-white hover:bg-slate-800 text-xs sm:text-sm font-semibold transition cursor-pointer whitespace-nowrap"
           >
-            <Share2 className="w-4 h-4" />
-            <span>Achievement Certificate</span>
+            <Share2 className="w-4 h-4 shrink-0" />
+            <span>Certificate</span>
           </button>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
           <button
             type="button"
             onClick={handleTrainWeakness}
             disabled={isGeneratingDrill}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 border border-purple-400/50 text-white font-bold text-sm shadow-[0_0_25px_rgba(168,85,247,0.45)] transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 border border-purple-400/50 text-white font-bold text-xs sm:text-sm shadow-[0_0_25px_rgba(168,85,247,0.45)] transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 cursor-pointer"
           >
-            <Sparkles className={`w-4 h-4 text-cyan-200 ${isGeneratingDrill ? 'animate-spin' : ''}`} />
-            <span>
+            <Sparkles className={`w-4 h-4 text-cyan-200 shrink-0 ${isGeneratingDrill ? 'animate-spin' : ''}`} />
+            <span className="truncate">
               {isGeneratingDrill
                 ? 'Synthesizing Drill...'
                 : bottleneckKeys.length > 0
-                ? `Train Weakness with AI (${bottleneckKeys.map((k) => k.toUpperCase()).join(', ')})`
+                ? `Train Weakness (${bottleneckKeys.map((k) => k.toUpperCase()).join(', ')})`
                 : 'Train Weakness with AI'}
             </span>
           </button>
@@ -663,7 +677,7 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
           <button
             type="button"
             onClick={onNavigateToAiCoach}
-            className="flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer text-xs"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer text-xs font-semibold whitespace-nowrap"
             title="Open AI Biomechanical Coach Lab"
           >
             <span>Full AI Lab</span>
@@ -672,9 +686,9 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
           <button
             type="button"
             onClick={onNavigateToAnalytics}
-            className="flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition cursor-pointer text-xs font-semibold whitespace-nowrap"
           >
-            <TrendingUp className="w-4 h-4" />
+            <TrendingUp className="w-4 h-4 shrink-0" />
             <span>Analytics</span>
           </button>
         </div>
@@ -682,11 +696,11 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
 
       {/* Share / Certificate Modal */}
       {showShareModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="w-full max-w-2xl bg-[#070e24] border border-sky-500/30 rounded-2xl p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="w-full max-w-2xl bg-[#070e24] border border-sky-500/30 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col gap-4 max-h-[90dvh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-sky-500/15">
-              <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                <Award className="w-5 h-5" />
+              <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm sm:text-base">
+                <Award className="w-5 h-5 shrink-0" />
                 <span>Certificate of Keystroke Mastery</span>
               </div>
               <button
@@ -699,7 +713,7 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
             </div>
 
             {/* Recipient Name Customization */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               <label htmlFor="cert-name-input" className="text-xs uppercase font-mono text-slate-400 whitespace-nowrap">
                 Name on Certificate:
               </label>
@@ -708,7 +722,7 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
                 type="text"
                 value={certRecipient}
                 onChange={(e) => setCertRecipient(e.target.value)}
-                className="flex-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-sky-500/30 text-white font-medium text-sm focus:outline-none focus:border-cyan-400"
+                className="flex-1 w-full px-3 py-2 rounded-lg bg-slate-900 border border-sky-500/30 text-white font-medium text-sm focus:outline-none focus:border-cyan-400"
               />
             </div>
 
@@ -718,11 +732,11 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
             </div>
 
             {/* Action buttons */}
-            <div className="flex items-center justify-between gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 pt-2">
               <button
                 type="button"
                 onClick={copySummary}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 hover:text-white transition text-xs font-semibold"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 hover:text-white transition text-xs font-semibold"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                 <span>{copied ? 'Copied to Clipboard!' : 'Copy Results Summary'}</span>
@@ -731,7 +745,7 @@ export const ResultsHUD: React.FC<ResultsHUDProps> = ({
               <button
                 type="button"
                 onClick={downloadCertificate}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg transition"
+                className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg transition"
               >
                 <Download className="w-4 h-4" />
                 <span>Download PNG Certificate</span>

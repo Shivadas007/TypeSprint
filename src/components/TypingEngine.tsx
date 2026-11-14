@@ -236,71 +236,137 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
     ensureWordSupply();
   }, [wordIndex, ensureWordSupply]);
 
-  // Smooth Line Scrolling & Caret Position Calculator
-  useEffect(() => {
-    if (!wordsElRef.current || !containerRef.current) return;
+  // Helper: core character / space / backspace processors (used by both KeyDown & mobile soft keyboard)
+  const handleSpacePress = useCallback(() => {
+    if (finishedRef.current || charIndex === 0) return;
 
-    const wordsContainer = wordsElRef.current;
-    const scrollContainer = containerRef.current;
-    const currentWordEl = wordsContainer.children[wordIndex] as HTMLElement | undefined;
+    totalKeystrokesRef.current += 1;
+    const currentWord = words[wordIndex] || '';
+    const currentWordHistory = typedHistory[wordIndex] || [];
+    const hasErrors =
+      currentWordHistory.some((s) => s === 'incorrect') ||
+      (extraChars[wordIndex] && extraChars[wordIndex].length > 0) ||
+      charIndex < currentWord.length;
 
-    if (!currentWordEl) return;
-
-    // Dynamic Line Scrolling Calculation
-    const wordTop = currentWordEl.offsetTop;
-    const firstWordTop = (wordsContainer.children[0] as HTMLElement)?.offsetTop || 0;
-    const singleLineH = currentWordEl.offsetHeight || 58;
-    const lineStep = singleLineH + 16;
-    const currentLine = Math.max(0, Math.round((wordTop - firstWordTop) / lineStep));
-
-    // If beyond the first 2 lines, smoothly scroll so that active line is kept in comfortable view
-    if (currentLine >= 2) {
-      const shiftY = (currentLine - 1) * lineStep;
-      wordsContainer.style.transform = `translateY(-${shiftY}px)`;
+    if (!hasErrors) {
+      correctCharsRef.current += 1;
     } else {
-      wordsContainer.style.transform = 'translateY(0px)';
+      totalErrorsRef.current += 1;
     }
 
-    // Caret Position Calculation
-    const containerRect = scrollContainer.getBoundingClientRect();
-    let targetLeft = 0;
-    let targetTop = 0;
-    let targetHeight = 44;
+    wordsCompletedRef.current += 1;
+    setWordsCompleted(wordsCompletedRef.current);
+    sound.space();
 
-    if (activeCharSpanRef.current) {
-      const charRect = activeCharSpanRef.current.getBoundingClientRect();
-      targetLeft = charRect.left - containerRect.left;
-      targetTop = charRect.top - containerRect.top;
-      targetHeight = charRect.height || 44;
-    } else {
-      // End of word or word boundary
-      const letters = currentWordEl.querySelectorAll('.letter-span');
-      if (letters.length > 0) {
-        const lastCharRect = letters[letters.length - 1].getBoundingClientRect();
-        targetLeft = lastCharRect.right - containerRect.left + 2;
-        targetTop = lastCharRect.top - containerRect.top;
-        targetHeight = lastCharRect.height || 44;
-      } else {
-        const wordRect = currentWordEl.getBoundingClientRect();
-        targetLeft = wordRect.left - containerRect.left;
-        targetTop = wordRect.top - containerRect.top;
-        targetHeight = wordRect.height || 44;
+    if (mode === 'word-sprint' && wordsCompletedRef.current >= duration) {
+      finishTestRef.current();
+      return;
+    }
+
+    const nextWordIdx = wordIndex + 1;
+    if (nextWordIdx >= words.length - 20) {
+      const extra = getMoreWords(80);
+      setWords((prev) => [...prev, ...extra]);
+      setTypedHistory((prev) => [...prev, ...extra.map((w) => new Array(w.length).fill(''))]);
+    }
+
+    setWordIndex(nextWordIdx);
+    setCharIndex(0);
+  }, [charIndex, words, wordIndex, typedHistory, extraChars, mode, duration, getMoreWords]);
+
+  // Smooth Line Scrolling & Caret Position Calculator (adapts dynamically to any font size / resize / orientation)
+  const syncCaretAndScroll = useCallback(
+    (markTyping = false) => {
+      if (!wordsElRef.current || !containerRef.current) return;
+
+      const wordsContainer = wordsElRef.current;
+      const scrollContainer = containerRef.current;
+      const currentWordEl = wordsContainer.children[wordIndex] as HTMLElement | undefined;
+
+      if (!currentWordEl) return;
+
+      // Measure actual rendered row spacing dynamically from DOM children
+      const firstWordEl = wordsContainer.children[0] as HTMLElement | undefined;
+      const firstWordTop = firstWordEl?.offsetTop || 0;
+      let lineStep = (currentWordEl.offsetHeight || 48) + 12;
+      for (let i = 1; i < wordsContainer.children.length; i++) {
+        const childTop = (wordsContainer.children[i] as HTMLElement).offsetTop;
+        if (childTop > firstWordTop + 4) {
+          lineStep = childTop - firstWordTop;
+          break;
+        }
       }
-    }
 
-    setCaretPos({
-      left: Math.round(targetLeft),
-      top: Math.round(targetTop),
-      height: Math.round(targetHeight),
-      visible: true,
-      isTyping: true,
-    });
+      const wordTop = currentWordEl.offsetTop;
+      const currentLine = Math.max(0, Math.round((wordTop - firstWordTop) / Math.max(1, lineStep)));
+
+      if (currentLine >= 2) {
+        const shiftY = (currentLine - 1) * lineStep;
+        wordsContainer.style.transform = `translateY(-${shiftY}px)`;
+      } else {
+        wordsContainer.style.transform = 'translateY(0px)';
+      }
+
+      const containerRect = scrollContainer.getBoundingClientRect();
+      let targetLeft = 0;
+      let targetTop = 0;
+      let targetHeight = currentWordEl.offsetHeight || 36;
+
+      if (activeCharSpanRef.current) {
+        const charRect = activeCharSpanRef.current.getBoundingClientRect();
+        targetLeft = charRect.left - containerRect.left;
+        targetTop = charRect.top - containerRect.top;
+        targetHeight = charRect.height || targetHeight;
+      } else {
+        const letters = currentWordEl.querySelectorAll('.letter-span');
+        if (letters.length > 0) {
+          const lastCharRect = letters[letters.length - 1].getBoundingClientRect();
+          targetLeft = lastCharRect.right - containerRect.left + 2;
+          targetTop = lastCharRect.top - containerRect.top;
+          targetHeight = lastCharRect.height || targetHeight;
+        } else {
+          const wordRect = currentWordEl.getBoundingClientRect();
+          targetLeft = wordRect.left - containerRect.left;
+          targetTop = wordRect.top - containerRect.top;
+          targetHeight = wordRect.height || targetHeight;
+        }
+      }
+
+      setCaretPos((prev) => ({
+        left: Math.round(targetLeft),
+        top: Math.round(targetTop),
+        height: Math.round(targetHeight),
+        visible: true,
+        isTyping: markTyping ? true : prev.isTyping,
+      }));
+    },
+    [wordIndex]
+  );
+
+  useEffect(() => {
+    syncCaretAndScroll(true);
 
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     idleTimerRef.current = setTimeout(() => {
       setCaretPos((prev) => ({ ...prev, isTyping: false }));
     }, 600);
-  }, [wordIndex, charIndex, words]);
+  }, [wordIndex, charIndex, words, syncCaretAndScroll]);
+
+  // Recalculate caret & line offsets cleanly on resize or phone orientation change
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const handleResize = () => syncCaretAndScroll(false);
+    window.addEventListener('resize', handleResize);
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(handleResize) : null;
+    observer?.observe(el);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      observer?.disconnect();
+    };
+  }, [syncCaretAndScroll]);
 
   // Synchronous metric updater: calculates live Net WPM and Accuracy
   const updateLiveMetrics = useCallback(() => {
@@ -473,45 +539,7 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
     // Space key moves to next word
     if (e.key === ' ') {
       e.preventDefault();
-      if (charIndex === 0) return; // Prevent multiple empty spaces
-
-      totalKeystrokesRef.current += 1;
-
-      // Check if current word was completed correctly without errors
-      const currentWord = words[wordIndex] || '';
-      const currentWordHistory = typedHistory[wordIndex] || [];
-      const hasErrors =
-        currentWordHistory.some((s) => s === 'incorrect') ||
-        (extraChars[wordIndex] && extraChars[wordIndex].length > 0) ||
-        charIndex < currentWord.length;
-
-      if (!hasErrors) {
-        // Space counts as a correct separator
-        correctCharsRef.current += 1;
-      } else {
-        totalErrorsRef.current += 1;
-      }
-
-      wordsCompletedRef.current += 1;
-      setWordsCompleted(wordsCompletedRef.current);
-      sound.space();
-
-      // Check Word-Sprint completion
-      if (mode === 'word-sprint' && wordsCompletedRef.current >= duration) {
-        finishTestRef.current();
-        return;
-      }
-
-      const nextWordIdx = wordIndex + 1;
-      // Proactively ensure word supply so words never end
-      if (nextWordIdx >= words.length - 20) {
-        const extra = getMoreWords(80);
-        setWords((prev) => [...prev, ...extra]);
-        setTypedHistory((prev) => [...prev, ...extra.map((w) => new Array(w.length).fill(''))]);
-      }
-
-      setWordIndex(nextWordIdx);
-      setCharIndex(0);
+      handleSpacePress();
       updateLiveMetrics();
       return;
     }
@@ -519,50 +547,8 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
     // Backspace handling
     if (e.key === 'Backspace') {
       e.preventDefault();
-      if (charIndex > 0) {
-        totalKeystrokesRef.current += 1;
-
-        const currentWord = words[wordIndex] || '';
-        const currentExtras = extraChars[wordIndex] || [];
-
-        if (charIndex > currentWord.length && currentExtras.length > 0) {
-          // Remove extra character
-          setExtraChars((prev) => ({
-            ...prev,
-            [wordIndex]: prev[wordIndex].slice(0, -1),
-          }));
-          setCharIndex((prev) => prev - 1);
-        } else {
-          // Step back within original word bounds
-          const prevIdx = charIndex - 1;
-          const status = typedHistory[wordIndex]?.[prevIdx];
-
-          if (status === 'correct') {
-            correctCharsRef.current = Math.max(0, correctCharsRef.current - 1);
-          }
-
-          setTypedHistory((prev) => {
-            const copy = [...prev];
-            if (copy[wordIndex]) {
-              copy[wordIndex] = [...copy[wordIndex]];
-              copy[wordIndex][prevIdx] = '';
-            }
-            return copy;
-          });
-          setCharIndex(prevIdx);
-        }
-
-        updateLiveMetrics();
-      } else if (wordIndex > 0) {
-        // Step back to previous word
-        const prevWordIdx = wordIndex - 1;
-        const prevWord = words[prevWordIdx] || '';
-        setWordIndex(prevWordIdx);
-        setCharIndex(prevWord.length);
-        wordsCompletedRef.current = Math.max(0, wordsCompletedRef.current - 1);
-        setWordsCompleted(wordsCompletedRef.current);
-        updateLiveMetrics();
-      }
+      lastKeyDownBackspaceTsRef.current = Date.now();
+      performBackspace();
       return;
     }
 
@@ -583,7 +569,6 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
         const isMatch = typedChar === targetChar;
         const targetLower = targetChar.toLowerCase();
 
-        // 1. Record telemetry on target key (what the user was SUPPOSED to type)
         if (!keyTelemetryRef.current[targetLower]) {
           keyTelemetryRef.current[targetLower] = { total: 0, errors: 0, totalMs: 0 };
         }
@@ -598,10 +583,8 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
         } else {
           sound.error();
           totalErrorsRef.current += 1;
-          // The typist missed the target character
           keyTelemetryRef.current[targetLower].errors += 1;
 
-          // Also track the mistyped key (if different from target)
           const typedLower = typedChar.toLowerCase();
           if (typedLower !== targetLower) {
             if (!keyTelemetryRef.current[typedLower]) {
@@ -611,7 +594,6 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
             keyTelemetryRef.current[typedLower].errors += 1;
           }
 
-          // Endless Mode Check (sudden death limit: 3 errors)
           if (mode === 'endless' && totalErrorsRef.current >= 3) {
             finishTestRef.current();
             return;
@@ -628,7 +610,6 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
         });
         setCharIndex((prev) => prev + 1);
       } else {
-        // Typing extra characters beyond word length
         sound.error();
         totalErrorsRef.current += 1;
         const typedLower = typedChar.toLowerCase();
@@ -649,25 +630,115 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
     }
   };
 
+  const lastKeyDownBackspaceTsRef = useRef<number>(0);
+
+  const performBackspace = useCallback(() => {
+    if (finishedRef.current) return;
+    if (charIndex > 0) {
+      totalKeystrokesRef.current += 1;
+
+      const currentWord = words[wordIndex] || '';
+      const currentExtras = extraChars[wordIndex] || [];
+
+      if (charIndex > currentWord.length && currentExtras.length > 0) {
+        setExtraChars((prev) => ({
+          ...prev,
+          [wordIndex]: prev[wordIndex].slice(0, -1),
+        }));
+        setCharIndex((prev) => prev - 1);
+      } else {
+        const prevIdx = charIndex - 1;
+        const status = typedHistory[wordIndex]?.[prevIdx];
+
+        if (status === 'correct') {
+          correctCharsRef.current = Math.max(0, correctCharsRef.current - 1);
+        }
+
+        setTypedHistory((prev) => {
+          const copy = [...prev];
+          if (copy[wordIndex]) {
+            copy[wordIndex] = [...copy[wordIndex]];
+            copy[wordIndex][prevIdx] = '';
+          }
+          return copy;
+        });
+        setCharIndex(prevIdx);
+      }
+
+      updateLiveMetrics();
+    } else if (wordIndex > 0) {
+      const prevWordIdx = wordIndex - 1;
+      const prevWord = words[prevWordIdx] || '';
+      setWordIndex(prevWordIdx);
+      setCharIndex(prevWord.length);
+      wordsCompletedRef.current = Math.max(0, wordsCompletedRef.current - 1);
+      setWordsCompleted(wordsCompletedRef.current);
+      updateLiveMetrics();
+    }
+  }, [charIndex, words, wordIndex, extraChars, typedHistory, updateLiveMetrics]);
+
+  // Fallback input handler for Android / mobile IME soft keyboards that emit e.key === 'Unidentified'
+  const handleMobileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    e.target.value = '';
+    if (!val || finishedRef.current) return;
+
+    for (const ch of val) {
+      if (!startTimeRef.current) {
+        startTimer();
+      }
+      if (onKeyStroke) {
+        onKeyStroke(ch);
+      }
+      if (ch === ' ') {
+        handleSpacePress();
+        break;
+      }
+
+      totalKeystrokesRef.current += 1;
+      const currentWord = words[wordIndex] || '';
+      const targetChar = currentWord[charIndex];
+      if (charIndex < currentWord.length) {
+        const isMatch = ch === targetChar;
+        const targetLower = targetChar.toLowerCase();
+        if (!keyTelemetryRef.current[targetLower]) {
+          keyTelemetryRef.current[targetLower] = { total: 0, errors: 0, totalMs: 0 };
+        }
+        keyTelemetryRef.current[targetLower].total += 1;
+
+        if (isMatch) {
+          sound.correct();
+          correctCharsRef.current += 1;
+        } else {
+          sound.error();
+          totalErrorsRef.current += 1;
+          keyTelemetryRef.current[targetLower].errors += 1;
+          if (mode === 'endless' && totalErrorsRef.current >= 3) {
+            finishTestRef.current();
+            return;
+          }
+        }
+
+        setTypedHistory((prev) => {
+          const copy = [...prev];
+          if (copy[wordIndex]) {
+            copy[wordIndex] = [...copy[wordIndex]];
+            copy[wordIndex][charIndex] = isMatch ? 'correct' : 'incorrect';
+          }
+          return copy;
+        });
+        setCharIndex((prev) => prev + 1);
+      }
+    }
+
+    updateLiveMetrics();
+  };
+
   return (
     <div
-      className="w-full flex flex-col items-center select-none"
+      className="w-full flex flex-col items-center select-none relative"
       onClick={focusInput}
     >
-      {/* Hidden input catching user keyboard events */}
-      <input
-        ref={inputRef}
-        type="text"
-        className="opacity-0 pointer-events-none absolute top-0 left-0 w-1 h-1"
-        onKeyDown={handleKeyDown}
-        onKeyUp={(e) => setCapsLockOn(e.getModifierState?.('CapsLock') || false)}
-        autoComplete="off"
-        autoCapitalize="off"
-        autoCorrect="off"
-        spellCheck={false}
-        aria-label="Keystroke Capture"
-      />
-
       {/* Caps Lock Warning Banner */}
       {capsLockOn && (
         <div className="flex items-center gap-2 mb-3 px-4 py-1.5 rounded-lg bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs font-semibold animate-pulse">
@@ -676,57 +747,27 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
         </div>
       )}
 
-      {/* Top HUD Telemetry Ribbon */}
-      <div className="w-full flex items-center justify-between px-6 sm:px-8 py-4 mb-4 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-md shadow-lg text-base">
+      {/* Top HUD Telemetry Ribbon (Adapts from stacked mobile 3-col strip to single-row desktop bar) */}
+      <div className="w-full flex flex-wrap md:flex-nowrap items-center justify-between gap-y-2.5 gap-x-2 sm:gap-x-4 px-3.5 sm:px-6 lg:px-8 py-2.5 sm:py-4 mb-3 sm:mb-4 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-md shadow-lg text-sm sm:text-base">
         {/* Left: Mode & Level Badge */}
-        <div className="flex items-center gap-3">
-          <span className="font-bold text-sky-400 capitalize flex items-center gap-2 text-base sm:text-lg">
-            {mode === 'code' && <Code className="w-5 h-5 text-emerald-400" />}
-            {mode === 'precision' && <Target className="w-5 h-5 text-purple-400" />}
-            {mode === 'time-attack' && <Zap className="w-5 h-5 text-amber-400" />}
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
+          <span className="font-bold text-sky-400 capitalize flex items-center gap-1.5 sm:gap-2 text-xs sm:text-lg whitespace-nowrap">
+            {mode === 'code' && <Code className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 shrink-0" />}
+            {mode === 'precision' && <Target className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 shrink-0" />}
+            {mode === 'time-attack' && <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 shrink-0" />}
             {mode.replace('-', ' ')}
           </span>
           <span className="text-slate-600">·</span>
-          <span className="text-slate-400 uppercase tracking-wider text-xs sm:text-sm font-mono font-bold">{level}</span>
+          <span className="text-slate-400 uppercase tracking-wider text-[11px] sm:text-sm font-mono font-bold whitespace-nowrap">{level}</span>
           {isAiGenerated && (
-            <span className="px-2.5 py-1 rounded text-xs font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+            <span className="hidden sm:inline-flex px-2 py-0.5 rounded text-xs font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 whitespace-nowrap">
               AI Tailored
             </span>
           )}
         </div>
 
-        {/* Center: Live Speed & Accuracy & Time */}
-        <div className="flex items-center gap-6 sm:gap-8 font-mono">
-          <div className="flex items-baseline gap-2">
-            <span className="text-xs sm:text-sm text-slate-400 uppercase font-bold tracking-wider">Speed:</span>
-            <span className="text-xl sm:text-2xl font-black text-sky-300 tabular-nums">{liveWpm}</span>
-            <span className="text-xs text-slate-400">wpm</span>
-          </div>
-
-          <div className="flex items-baseline gap-2">
-            <span className="text-xs sm:text-sm text-slate-400 uppercase font-bold tracking-wider">Acc:</span>
-            <span
-              className={`text-xl sm:text-2xl font-black tabular-nums ${
-                liveAccuracy >= 95 ? 'text-emerald-400' : liveAccuracy >= 85 ? 'text-amber-400' : 'text-red-400'
-              }`}
-            >
-              {liveAccuracy}%
-            </span>
-          </div>
-
-          <div className="flex items-baseline gap-2 min-w-[85px] justify-end">
-            <span className="text-xs sm:text-sm text-slate-400 uppercase font-bold tracking-wider">
-              {mode === 'word-sprint' ? 'Words:' : 'Time:'}
-            </span>
-            <span className="text-2xl sm:text-3xl font-black text-cyan-400 tabular-nums">
-              {mode === 'word-sprint' ? `${wordsCompleted}/${duration}` : timeLeft}
-            </span>
-            <span className="text-xs text-slate-400">{mode === 'word-sprint' ? '' : 's'}</span>
-          </div>
-        </div>
-
-        {/* Right: Quick Controls */}
-        <div className="flex items-center gap-3">
+        {/* Right Quick Controls (stays on top row beside Mode on mobile, moves to right on md+) */}
+        <div className="flex items-center gap-1.5 sm:gap-3 md:order-3 shrink-0">
           <button
             type="button"
             onClick={(e) => {
@@ -734,11 +775,11 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
               sound.enabled = !sound.enabled;
               focusInput();
             }}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
             title={sound.enabled ? 'Mute Sounds' : 'Unmute Sounds'}
             aria-label="Toggle Sound"
           >
-            {sound.enabled ? <Volume2 className="w-5 h-5 text-cyan-400" /> : <VolumeX className="w-5 h-5" />}
+            {sound.enabled ? <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" /> : <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" />}
           </button>
 
           <button
@@ -747,19 +788,53 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
               e.stopPropagation();
               resetTest();
             }}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-sky-500/10 border border-sky-500/30 text-sky-300 hover:bg-sky-500/20 hover:text-white transition"
+            className="flex items-center gap-1 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-sky-500/10 border border-sky-500/30 text-sky-300 hover:bg-sky-500/20 hover:text-white transition whitespace-nowrap"
             title="Restart Test (Tab / Esc)"
             aria-label="Restart Test"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>Restart</span>
           </button>
+        </div>
+
+        {/* Center: Live Speed & Accuracy & Time */}
+        <div className="w-full md:w-auto md:order-2 grid grid-cols-3 md:flex items-center gap-2 sm:gap-6 lg:gap-8 font-mono pt-2 md:pt-0 border-t md:border-t-0 border-sky-500/10 text-center md:text-left">
+          <div className="flex flex-col sm:flex-row items-center sm:items-baseline justify-center md:justify-start gap-0 sm:gap-2">
+            <span className="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Speed</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-lg sm:text-xl lg:text-2xl font-black text-sky-300 tabular-nums">{liveWpm}</span>
+              <span className="text-[10px] sm:text-xs text-slate-400">wpm</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center sm:items-baseline justify-center md:justify-start gap-0 sm:gap-2">
+            <span className="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Acc</span>
+            <span
+              className={`text-lg sm:text-xl lg:text-2xl font-black tabular-nums ${
+                liveAccuracy >= 95 ? 'text-emerald-400' : liveAccuracy >= 85 ? 'text-amber-400' : 'text-red-400'
+              }`}
+            >
+              {liveAccuracy}%
+            </span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center sm:items-baseline justify-center md:justify-end gap-0 sm:gap-2 md:min-w-[85px]">
+            <span className="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">
+              {mode === 'word-sprint' ? 'Words' : 'Time'}
+            </span>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-lg sm:text-2xl lg:text-3xl font-black text-cyan-400 tabular-nums">
+                {mode === 'word-sprint' ? `${wordsCompleted}/${duration}` : timeLeft}
+              </span>
+              <span className="text-[10px] sm:text-xs text-slate-400">{mode === 'word-sprint' ? '' : 's'}</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Progress Timeline Bar */}
       {mode !== 'word-sprint' && (
-        <div className="w-full h-1.5 mb-4 bg-slate-900/80 rounded-full overflow-hidden border border-sky-500/15">
+        <div className="w-full h-1.5 mb-3 sm:mb-4 bg-slate-900/80 rounded-full overflow-hidden border border-sky-500/15">
           <div
             className="h-full bg-gradient-to-r from-cyan-500 via-sky-400 to-indigo-500 transition-all duration-300 rounded-full"
             style={{ width: `${Math.max(0, (timeLeft / duration) * 100)}%` }}
@@ -767,20 +842,43 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
         </div>
       )}
 
-      {/* Main Words Flow Box with strictly equal padding on all sides */}
+      {/* Main Words Flow Box (fluid padding & adaptive 3-line height across mobile, laptop height, desktop) */}
       <div
         onClick={focusInput}
-        className="w-full rounded-3xl p-8 sm:p-10 lg:p-12 bg-[#040817]/90 border border-sky-500/30 backdrop-blur-2xl shadow-[0_12px_45px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(56,189,248,0.15)] relative cursor-text transition-all duration-200 hover:border-cyan-400/50"
+        className="w-full rounded-2xl sm:rounded-3xl p-4 sm:p-7 md:p-9 lg:p-11 bg-[#040817]/90 border border-sky-500/30 backdrop-blur-2xl shadow-[0_12px_45px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(56,189,248,0.15)] relative cursor-text transition-all duration-200 hover:border-cyan-400/50"
       >
+        {/* Hidden input placed inside the typing box so mobile browsers don't jump scroll to top */}
+        <input
+          ref={inputRef}
+          type="text"
+          inputMode="text"
+          enterKeyHint="done"
+          className="opacity-0 pointer-events-none absolute top-4 left-4 w-1 h-1"
+          onKeyDown={handleKeyDown}
+          onBeforeInput={(e) => {
+            const inputEvent = e.nativeEvent as InputEvent;
+            if (inputEvent?.inputType === 'deleteContentBackward' && Date.now() - lastKeyDownBackspaceTsRef.current > 50) {
+              performBackspace();
+            }
+          }}
+          onChange={handleMobileInputChange}
+          onKeyUp={(e) => setCapsLockOn(e.getModifierState?.('CapsLock') || false)}
+          autoComplete="off"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
+          aria-label="Keystroke Capture"
+        />
+
         {/* Inner 3-line clipping viewport */}
         <div
           ref={containerRef}
-          className="w-full h-[188px] sm:h-[208px] overflow-hidden relative"
+          className="w-full h-[132px] sm:h-[164px] md:h-[186px] lg:h-[208px] overflow-hidden relative"
         >
           {/* Animated Smooth Gliding Cosmic Caret with Glowing Orb Head */}
           {caretPos.visible && (
             <div
-              className={`absolute w-[4px] rounded-full pointer-events-none transition-[left,top] duration-100 ease-out z-20 ${
+              className={`absolute w-[3px] sm:w-[4px] rounded-full pointer-events-none transition-[left,top] duration-100 ease-out z-20 ${
                 caretPos.isTyping
                   ? 'bg-cyan-300 shadow-[0_0_16px_#38bdf8,0_0_32px_rgba(12,151,224,0.9)] opacity-100'
                   : 'bg-gradient-to-b from-cyan-300 via-sky-400 to-indigo-400 animate-caret'
@@ -799,7 +897,7 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
           {/* Text Container with Smooth Upward Shift */}
           <div
             ref={wordsElRef}
-            className="flex flex-wrap gap-x-4 sm:gap-x-5 gap-y-4 font-mono text-3xl sm:text-[34px] md:text-[36px] leading-[1.65] tracking-wide transition-transform duration-250 ease-out will-change-transform"
+            className="flex flex-wrap gap-x-3 sm:gap-x-4 md:gap-x-5 gap-y-2.5 sm:gap-y-3.5 md:gap-y-4 font-mono text-xl sm:text-2xl md:text-[30px] lg:text-[34px] xl:text-[36px] leading-[1.6] tracking-wide transition-transform duration-250 ease-out will-change-transform"
           >
             {words.map((word, wIdx) => {
               const isCurrentWord = wIdx === wordIndex;
@@ -856,19 +954,19 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({
       </div>
 
       {/* Bottom Hint */}
-      <div className="w-full flex items-center justify-between text-xs text-slate-500 mt-4 px-2">
-        <div className="flex items-center gap-2">
-          <kbd className="px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700 font-mono text-[11px] text-slate-300">
+      <div className="w-full flex flex-wrap items-center justify-between gap-2 text-[11px] sm:text-xs text-slate-500 mt-3 sm:mt-4 px-1 sm:px-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <kbd className="px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700 font-mono text-[10px] sm:text-[11px] text-slate-300">
             Tab
           </kbd>
           <span>or</span>
-          <kbd className="px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700 font-mono text-[11px] text-slate-300">
+          <kbd className="px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700 font-mono text-[10px] sm:text-[11px] text-slate-300">
             Esc
           </kbd>
           <span>to restart</span>
         </div>
         <div>
-          <span>Click anywhere to refocus typing flow</span>
+          <span>Tap or click box to focus typing</span>
         </div>
       </div>
     </div>

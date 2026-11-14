@@ -160,13 +160,13 @@ export const AiCoachView: React.FC<AiCoachViewProps> = ({
   };
 
   return (
-    <div className="w-full flex flex-col gap-8 pb-12 animate-in fade-in duration-300">
+    <div className="w-full flex flex-col gap-6 sm:gap-8 pb-10 sm:pb-12 animate-in fade-in duration-300">
       {/* Header Banner */}
-      <div className="p-8 rounded-3xl bg-gradient-to-r from-[#0b1739] via-[#091533] to-[#120f2e] border border-cyan-500/30 backdrop-blur-2xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#0b1739] via-[#091533] to-[#120f2e] border border-cyan-500/30 backdrop-blur-2xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6">
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-2xl">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center gap-1.5">
               <Brain className="w-3.5 h-3.5 text-cyan-400" />
               Neural Biomechanical Coach
@@ -174,10 +174,10 @@ export const AiCoachView: React.FC<AiCoachViewProps> = ({
             <span className="text-xs text-slate-400 font-mono">v2.5 Connected</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
             Personalized AI Typing Lab
           </h2>
-          <p className="text-slate-400 text-sm mt-2 leading-relaxed">
+          <p className="text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed">
             Real-time keystroke diagnostics analyze finger fatigue, latency asymmetry, and transition friction.
             Train with tailored drills designed specifically to eliminate your typing bottlenecks.
           </p>
@@ -187,7 +187,7 @@ export const AiCoachView: React.FC<AiCoachViewProps> = ({
           type="button"
           onClick={fetchCoachReport}
           disabled={loading}
-          className="relative z-10 flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-[0_0_25px_rgba(12,151,224,0.45)] transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 whitespace-nowrap"
+          className="relative z-10 w-full md:w-auto flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-[0_0_25px_rgba(12,151,224,0.45)] transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 whitespace-nowrap"
         >
           {loading ? (
             <RefreshCw className="w-4 h-4 animate-spin text-white" />
@@ -199,9 +199,9 @@ export const AiCoachView: React.FC<AiCoachViewProps> = ({
       </div>
 
       {/* Diagnostics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Identified Weak Keys */}
-        <div className="p-6 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col justify-between">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs uppercase font-mono tracking-widest text-slate-400">Bottleneck Keys</span>
@@ -231,7 +231,7 @@ export const AiCoachView: React.FC<AiCoachViewProps> = ({
         </div>
 
         {/* Biomechanical Asymmetry */}
-        <div className="p-6 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col justify-between">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs uppercase font-mono tracking-widest text-slate-400">Hand Cadence Balance</span>
@@ -261,7 +261,7 @@ export const AiCoachView: React.FC<AiCoachViewProps> = ({
         </div>
 
         {/* Next Speed Milestone */}
-        <div className="p-6 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col justify-between">
+        <div className="sm:col-span-2 lg:col-span-1 p-5 sm:p-6 rounded-2xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs uppercase font-mono tracking-widest text-slate-400">Next Target Milestone</span>
@@ -283,11 +283,11 @@ export const AiCoachView: React.FC<AiCoachViewProps> = ({
       </div>
 
       {/* Live Micro-Drill Biomechanical Audit */}
-      <div className="p-8 rounded-3xl bg-[#060c1d]/90 border border-sky-500/25 backdrop-blur-xl shadow-2xl flex flex-col gap-5">
+      <div className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#060c1d]/90 border border-sky-500/25 backdrop-blur-xl shadow-2xl flex flex-col gap-4 sm:gap-5">
         <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-sky-500/15">
           <div className="flex items-center gap-2.5">
-            <Activity className="w-5 h-5 text-cyan-400" />
-            <h3 className="text-lg font-bold text-white">Live Micro-Sprint Biomechanical Audit</h3>
+            <Activity className="w-5 h-5 text-cyan-400 shrink-0" />
+            <h3 className="text-base sm:text-lg font-bold text-white">Live Micro-Sprint Biomechanical Audit</h3>
           </div>
           <span className="text-xs font-mono text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30">
             Instant Keystroke Telemetry
@@ -299,7 +299,7 @@ export const AiCoachView: React.FC<AiCoachViewProps> = ({
         </p>
 
         {/* Prompt string with character highlighting */}
-        <div className="p-4 rounded-xl bg-slate-950/80 border border-sky-500/20 font-mono text-sm tracking-wide select-none">
+        <div className="p-3.5 sm:p-4 rounded-xl bg-slate-950/80 border border-sky-500/20 font-mono text-xs sm:text-sm tracking-wide select-none break-words leading-relaxed">
           {microDrillTarget.split('').map((char, index) => {
             let color = 'text-slate-500';
             if (index < microDrillInput.length) {
@@ -351,7 +351,7 @@ export const AiCoachView: React.FC<AiCoachViewProps> = ({
       </div>
 
       {/* AI Practice Generator Card */}
-      <div className="p-8 rounded-3xl bg-[#070e24]/90 border border-sky-500/30 backdrop-blur-xl shadow-2xl flex flex-col gap-6">
+      <div className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#070e24]/90 border border-sky-500/30 backdrop-blur-xl shadow-2xl flex flex-col gap-5 sm:gap-6">
         <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-sky-500/15">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400">
@@ -416,16 +416,16 @@ export const AiCoachView: React.FC<AiCoachViewProps> = ({
 
       {/* Training Plan List */}
       {report && (
-        <div className="p-8 rounded-3xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col gap-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Clock className="w-5 h-5 text-cyan-400" />
+        <div className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#060c1d]/90 border border-sky-500/20 backdrop-blur-xl shadow-xl flex flex-col gap-5 sm:gap-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <Clock className="w-5 h-5 text-cyan-400 shrink-0" />
               <span>Today's Neural Training Curriculum</span>
             </h3>
             <span className="text-xs font-mono text-slate-400">Total: 23 Minutes</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {report.todaysTrainingPlan.map((plan, i) => (
               <div
                 key={i}

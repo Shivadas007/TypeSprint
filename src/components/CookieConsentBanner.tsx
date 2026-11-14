@@ -29,7 +29,7 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onOpen
     <div
       role="dialog"
       aria-label="Cookie and Storage Preferences"
-      className="fixed bottom-4 left-4 right-4 z-50 max-w-4xl mx-auto p-4 sm:px-6 sm:py-4 rounded-2xl bg-[#070e24]/95 border border-sky-500/35 backdrop-blur-xl shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+      className="fixed bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-50 max-w-4xl mx-auto max-h-[80dvh] overflow-y-auto p-4 sm:px-6 sm:py-4 rounded-2xl bg-[#070e24]/95 border border-sky-500/35 backdrop-blur-xl shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4"
     >
       <div className="flex items-start gap-3">
         <div className="p-2 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 shrink-0 mt-0.5">
@@ -53,7 +53,7 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onOpen
         </div>
       </div>
 
-      <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto justify-end">
+      <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto justify-end">
         <button
           type="button"
           onClick={() => handleChoice('essential')}

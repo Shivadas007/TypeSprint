@@ -39,8 +39,8 @@ export const RegisterPageView: React.FC<RegisterPageViewProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto py-8 animate-in fade-in duration-300">
-      <div className="p-8 sm:p-9 rounded-3xl bg-[#070e24]/90 border border-sky-500/30 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+    <div className="w-full max-w-md mx-auto py-4 sm:py-8 animate-in fade-in duration-300">
+      <div className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#070e24]/90 border border-sky-500/30 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="text-center mb-6">
