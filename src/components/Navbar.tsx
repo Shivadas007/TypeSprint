@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { UserProfile, ThemeId, TestResult } from '../types';
 import { calculateRealtimeStreak } from '../utils/streak';
-import { PWAInstallButton } from './PWAInstallButton';
 import { StreakModal } from './StreakModal';
 import { Flame, LogIn, UserPlus, Menu, X, LogOut, Sparkles, Crown, Sun, Moon, Shield } from 'lucide-react';
 
@@ -88,11 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             })}
           </nav>
 
-          {/* Zone 3: Right Side Panel with Working Fire & Pro Buttons, and Glowing Sign In / Register Buttons */}
           <div className="flex items-center gap-2.5 sm:gap-3.5">
-            {/* PWA Install Button */}
-            <PWAInstallButton />
-
             {/* Interactive Fire Button (Daily Streak Counter - Always Active) */}
             <button
               type="button"
